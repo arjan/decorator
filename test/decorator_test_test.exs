@@ -18,18 +18,23 @@ defmodule DecoratorTestTest do
   # end
 
   defmodule MyDecorator do
-    use Decorators.Define, [:instrument, :private]
+    use Decorators.Define, [instrument: 0]
 
-    defmacro __decorated(function) do
-      function
+    def __decorator_instrument(body, _context) do
+      quote do
+        IO.inspect("instrument!")
+        unquote(body)
+      end
     end
+
   end
 
   defmodule MyOtherDecorator do
-    use Decorators.Define, [:other]
+    use Decorators.Define, [other: 1]
 
-    defmacro __decorated(function) do
-      function
+    def __decorator_other(name, body, _context) do
+      IO.puts("other: #{name}")
+      body
     end
   end
 
@@ -38,9 +43,9 @@ defmodule DecoratorTestTest do
     use MyDecorator
     use MyOtherDecorator
 
-    private()
     instrument()
-    other()
+    other("meh")
+    other("meh2")
     def hello() do
       IO.puts("Hello, world!")
     end
