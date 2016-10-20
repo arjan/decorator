@@ -22,8 +22,7 @@ defmodule Decorator.Decorate do
     body = if decorators do
       decorators
       |> Enum.reverse
-      |> Enum.reduce(body, fn({module, name, args}, body) ->
-        fun = String.to_atom("__decorator_#{name}")
+      |> Enum.reduce(body, fn({module, fun, args}, body) ->
         Kernel.apply(module, fun, args ++ [body, context])
       end)
     else

@@ -4,7 +4,7 @@ defmodule DecoratorTest do
   defmodule MyDecorator do
     use Decorator.Define, [some_decorator: 0]
 
-    def __decorator_some_decorator(body, _context) do
+    def some_decorator(body, _context) do
       body
     end
 
@@ -31,7 +31,7 @@ defmodule DecoratorTest do
   defmodule FunctionResultDecorator do
     use Decorator.Define, [function_result: 1]
 
-    def __decorator_function_result(add, body, _context) do
+    def function_result(add, body, _context) do
       quote do
         {unquote(add), unquote(body)}
       end
@@ -71,7 +71,7 @@ defmodule DecoratorTest do
   defmodule PreconditionDecorator do
     use Decorator.Define, [is_authorized: 0]
 
-    def __decorator_is_authorized(body, %{args: [conn]}) do
+    def is_authorized(body, %{args: [conn]}) do
       quote do
         if unquote(conn).assigns.user do
           unquote(body)
