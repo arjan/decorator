@@ -60,7 +60,7 @@ end
 ```
 
 Note that `print()` here is a function, not a macro! The actual macro
-has arity 0, and will be defined in the caller module. The decorator
+has arity 0, and will be imported in the caller module. The decorator
 module's `print()` function gets called when the actual function is
 being defined.
 
