@@ -1,5 +1,7 @@
 # Elixir function decorators
 
++[![Hex pm](http://img.shields.io/hexpm/v/decorator.svg?style=flat)](https://hex.pm/packages/decorator)
+
 A decorator is a macro which is executed while the function is
 defined. It can be used to add extra functionality to Elixir
 functions. The runtime overhead of a function decorator is zero, as it
