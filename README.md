@@ -61,8 +61,8 @@ Defining the decorator is pretty easy. Create a module in which you
 *use* the `Decorator.Define` module, passing in the decorator name and
 arity, or more than one if you want.
 
-The following declares a `@print` decorator which prints a message
-every time the function is called:
+The following declares the above `@print` decorator which prints a
+message every time the decorated function is called:
 
 ```elixir
 defmodule PrintDecorator do
