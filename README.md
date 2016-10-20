@@ -12,7 +12,7 @@ Examples of function decorators include: loggers, instrumentation
 (timing), precondition checks, et cetera.
 
 
-## A remark in advance
+## Some remarks in advance
 
 Some people think function decorators are a bad idea, as they can
 perform magic stuff on your functions (side effects!). Personally, I
@@ -33,7 +33,7 @@ Add `decorator` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-[{:decorator, "~> 0.0"}]
+  [{:decorator, "~> 0.0"}]
 end
 ```
 
@@ -46,12 +46,12 @@ function. It looks like this:
 
 ```elixir
 defmodule MyModule do
-use PrintDecorator
+  use PrintDecorator
 
-@print()
-def square(a) do
-a * a
-end
+  @print()
+  def square(a) do
+    a * a
+  end
 end
 ```
 
@@ -65,14 +65,14 @@ The following defines a print() decorator which prints a message every time the 
 
 ```elixir
 defmodule PrintDecorator do
-use Decorator.Define, [print: 0]
+  use Decorator.Define, [print: 0]
 
-def print(body, context) do
-quote do
-IO.puts("Function called: " <> Atom.to_string(unquote(context.name)))
-unquote(body)
-end
-end
+  def print(body, context) do
+    quote do
+      IO.puts("Function called: " <> Atom.to_string(unquote(context.name)))
+      unquote(body)
+    end
+  end
 
 end
 ```
