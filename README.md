@@ -3,10 +3,10 @@
 [![Build Status](https://travis-ci.org/arjan/decorator.png?branch=master)](https://travis-ci.org/arjan/decorator)
 [![Hex pm](http://img.shields.io/hexpm/v/decorator.svg?style=flat)](https://hex.pm/packages/decorator)
 
-A decorator is a macro which is executed while the function is
-defined. It can be used to add extra functionality to Elixir
-functions. The runtime overhead of a function decorator is zero, as it
-is executed on compile time.
+A function decorator is an "`@`" annotation that sits in front
+of a function definition.  It can be used to add extra functionality
+to Elixir functions. The runtime overhead of a function decorator is
+zero, as it is executed on compile time.
 
 Examples of function decorators include: loggers, instrumentation
 (timing), precondition checks, et cetera.
@@ -33,7 +33,7 @@ function. It looks like this:
 defmodule MyModule do
   use PrintDecorator
 
-  print()
+  @print()
   def square(a) do
     a * a
   end
@@ -80,7 +80,7 @@ macros.
 For instance, you could let the print function only print when a certain logging level has been set:
 
 ```elixir
-print(:debug)
+@print(:debug)
 def foo() do
  ...
 ```
@@ -100,3 +100,15 @@ the first argument:
     # ...
   end
 ```
+
+## Notes and remarks
+
+Some people think function decorators are a bad idea, as they can
+perform magic stuff on your functions (side effects!). I think they
+are just another form of metaprogramming. Use them wisely, and always
+study the decorator code itself, so you know what it is doing.
+
+**Note** When using decorators without arguments, Elixir warns you
+with a message *warning: module attribute @some_decorator in code
+block has no effect as it is never returned*. This is unfortunate but
+cannot be prevented.

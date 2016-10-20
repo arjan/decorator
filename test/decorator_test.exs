@@ -13,7 +13,7 @@ defmodule DecoratorTest do
   defmodule MyModule do
     use MyDecorator
 
-    some_decorator()
+    @some_decorator
     def square(a) do
       a * a
     end
@@ -42,18 +42,18 @@ defmodule DecoratorTest do
   defmodule MyFunctionResultModule do
     use FunctionResultDecorator
 
-    function_result(:ok)
+    @function_result(:ok)
     def square(a) do
       a * a
     end
 
-    function_result(:error)
+    @function_result(:error)
     def square_error(a) do
       a * a
     end
 
-    function_result(:a)
-    function_result("b")
+    @function_result(:a)
+    @function_result("b")
     def square_multiple(a) do
       a * a
     end
@@ -86,7 +86,7 @@ defmodule DecoratorTest do
   defmodule MyIsAuthorizedModule do
     use PreconditionDecorator
 
-    is_authorized()
+    @is_authorized()
     def perform(conn) do
       :ok
     end

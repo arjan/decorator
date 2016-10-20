@@ -18,18 +18,18 @@ defmodule Decorator.Decorate do
       args: args_ast,
       module: decoratee_mod}
 
-    decorators = Module.get_attribute(decoratee_mod, :decorate)
+    decorators = Module.get_attribute(decoratee_mod, :decorators)
     body = if decorators do
       decorators
       |> Enum.reverse
       |> Enum.reduce(body, fn({module, fun, args}, body) ->
-        Kernel.apply(module, fun, args ++ [body, context])
+        Kernel.apply(module, fun, (args || []) ++ [body, context])
       end)
     else
       body
     end
 
-    Module.delete_attribute(decoratee_mod, :decorate)
+    Module.delete_attribute(decoratee_mod, :decorators)
 
     quote do
       Kernel.def(
