@@ -1,23 +1,34 @@
 # Elixir function decorators
 
-**TODO: WORK IN PROGRESS, DO NOT USE**
+A decorator is a macro which is executed while the function is
+defined. It can be used to add extra functionality to Elixir
+functions. The runtime overhead of a function decorator is zero, as it
+is executed on compile time.
+
+Examples of function decorators include: loggers, instrumentation
+(timing), precondition checks, et cetera.
+
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
-  1. Add `decorate` to your list of dependencies in `mix.exs`:
+Add `decorator` to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
-      [{:decorate, "~> 0.1.0"}]
+      [{:decorator, "~> 0.0"}]
     end
     ```
 
-  2. Ensure `decorate` is started before your application:
+You can now define your function decorators.
+
+## Usage
+
+Function decorators are macros which you call just before defining a
+function.
 
     ```elixir
-    def application do
-      [applications: [:decorate]]
+    decorator()
+    def my_function do
+      # some expensive calculation...
     end
     ```

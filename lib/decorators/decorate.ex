@@ -1,7 +1,7 @@
-defmodule Decorators.Decorate do
+defmodule Decorator.Decorate do
 
   defmodule Context do
-    defstruct name: nil, arity: nil, module: nil
+    defstruct name: nil, arity: nil, module: nil, args: nil
   end
 
 
@@ -12,7 +12,11 @@ defmodule Decorators.Decorate do
     [do: body] = fn_opts_ast
 
     {name, _, args_ast} = fn_call_ast
-    context = %Context{name: name, arity: Enum.count(args_ast), module: decoratee_mod}
+    context = %Context{
+      name: name,
+      arity: Enum.count(args_ast),
+      args: args_ast,
+      module: decoratee_mod}
 
     decorators = Module.get_attribute(decoratee_mod, :decorate)
     body = if decorators do

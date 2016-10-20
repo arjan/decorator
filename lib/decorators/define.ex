@@ -1,4 +1,4 @@
-defmodule Decorators.Define do
+defmodule Decorator.Define do
 
 
   defmacro __using__(decorators) do
@@ -37,7 +37,7 @@ defmodule Decorators.Define do
 
         quote do
           import Kernel, except: [def: 2]
-          import Decorators.Decorate, only: [def: 2]
+          import Decorator.Decorate, only: [def: 2]
 
           import unquote(@decorator_module), only: unquote(imports)
         end

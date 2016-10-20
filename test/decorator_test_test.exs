@@ -1,61 +1,103 @@
-defmodule DecoratorTestTest do
+defmodule DecoratorTest do
   use ExUnit.Case
-  doctest DecoratorTest
-
-
-  # defmodule MyModule do
-  #   use DecoratorTest
-
-  #   decorate()
-  #   def foo(bar) do
-  #     bar + 1
-  #   end
-
-  #   def foo2(bar) do
-  #     bar + 1
-  #   end
-
-  # end
 
   defmodule MyDecorator do
-    use Decorators.Define, [instrument: 0]
+    use Decorator.Define, [some_decorator: 0]
 
-    def __decorator_instrument(body, _context) do
+    def __decorator_some_decorator(body, _context) do
+      body
+    end
+
+  end
+
+  defmodule MyModule do
+    use MyDecorator
+
+    some_decorator()
+    def square(a) do
+      a * a
+    end
+  end
+
+  test "basic function decoration" do
+    assert 4 == MyModule.square(2)
+    assert 16 == MyModule.square(4)
+  end
+
+
+
+  # Example decorator which modifies the return value of the function
+  # by wrapping it in a tuple.
+  defmodule FunctionResultDecorator do
+    use Decorator.Define, [function_result: 1]
+
+    def __decorator_function_result(add, body, _context) do
       quote do
-        IO.inspect("instrument!")
-        unquote(body)
+        {unquote(add), unquote(body)}
       end
     end
 
   end
 
-  defmodule MyOtherDecorator do
-    use Decorators.Define, [other: 1]
+  defmodule MyFunctionResultModule do
+    use FunctionResultDecorator
 
-    def __decorator_other(name, body, _context) do
-      IO.puts("other: #{name}")
-      body
+    function_result(:ok)
+    def square(a) do
+      a * a
+    end
+
+    function_result(:error)
+    def square_error(a) do
+      a * a
+    end
+
+    function_result(:a)
+    function_result("b")
+    def square_multiple(a) do
+      a * a
     end
   end
 
+  test "test function decoration with argument, modify return value, multiple decorators" do
+    assert {:ok, 4} == MyFunctionResultModule.square(2)
+    assert {:error, 4} == MyFunctionResultModule.square_error(2)
+    assert {"b", {:a, 4}} == MyFunctionResultModule.square_multiple(2)
+  end
 
-  defmodule MyModule do
-    use MyDecorator
-    use MyOtherDecorator
 
-    instrument()
-    other("meh")
-    other("meh2")
-    def hello() do
-      IO.puts("Hello, world!")
+  # Example decorator which uses one of the function arguments to
+  # perform a precondition check.
+  defmodule PreconditionDecorator do
+    use Decorator.Define, [is_authorized: 0]
+
+    def __decorator_is_authorized(body, %{args: [conn]}) do
+      quote do
+        if unquote(conn).assigns.user do
+          unquote(body)
+        else
+          raise RuntimeError, "Not authorized!"
+        end
+      end
     end
 
   end
 
+  defmodule MyIsAuthorizedModule do
+    use PreconditionDecorator
 
-  test "decoration" do
-    MyModule.hello
-    MyModule.hello
+    is_authorized()
+    def perform(conn) do
+      :ok
+    end
+  end
+
+  test "precondition decorator" do
+    assert :ok == MyIsAuthorizedModule.perform(%{assigns: %{user: true}})
+    assert_raise RuntimeError, fn ->
+      MyIsAuthorizedModule.perform(%{assigns: %{user: false}})
+    end
+
   end
 
 end
