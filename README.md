@@ -12,13 +12,28 @@ Examples of function decorators include: loggers, instrumentation
 (timing), precondition checks, et cetera.
 
 
+## A remark in advance
+
+Some people think function decorators are a bad idea, as they can
+perform magic stuff on your functions (side effects!). Personally, I
+think they are just another form of metaprogramming, one of Elixir's
+selling points. But use decorators wisely, and always study the
+decorator code itself, so you know what it is doing.
+
+**Note** When using decorators without arguments, Elixir warns you
+with a message *warning: module attribute @some_decorator in code
+block has no effect as it is never returned*. This is unfortunate but
+cannot be prevented, as this warning is emitted in a very early stage
+of compilation.
+
+
 ## Installation
 
 Add `decorator` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:decorator, "~> 0.0"}]
+[{:decorator, "~> 0.0"}]
 end
 ```
 
@@ -31,12 +46,12 @@ function. It looks like this:
 
 ```elixir
 defmodule MyModule do
-  use PrintDecorator
+use PrintDecorator
 
-  @print()
-  def square(a) do
-    a * a
-  end
+@print()
+def square(a) do
+a * a
+end
 end
 ```
 
@@ -50,14 +65,14 @@ The following defines a print() decorator which prints a message every time the 
 
 ```elixir
 defmodule PrintDecorator do
-  use Decorator.Define, [print: 0]
+use Decorator.Define, [print: 0]
 
-  def print(body, context) do
-    quote do
-      IO.puts("Function called: " <> Atom.to_string(unquote(context.name)))
-      unquote(body)
-    end
-  end
+def print(body, context) do
+quote do
+IO.puts("Function called: " <> Atom.to_string(unquote(context.name)))
+unquote(body)
+end
+end
 
 end
 ```
@@ -82,33 +97,21 @@ For instance, you could let the print function only print when a certain logging
 ```elixir
 @print(:debug)
 def foo() do
- ...
+...
 ```
 
 In this case, you specify the arity 1 for the decorator:
 
 ```elixir
 defmodule PrintDecorator do
-  use Decorator.Define, [print: 1]
+use Decorator.Define, [print: 1]
 ```
 
 And then your `print()` decorator function gets the level passed in as
 the first argument:
 
 ```elixir
-  def print(level, body, context) do
-    # ...
-  end
+def print(level, body, context) do
+# ...
+end
 ```
-
-## Notes and remarks
-
-Some people think function decorators are a bad idea, as they can
-perform magic stuff on your functions (side effects!). I think they
-are just another form of metaprogramming. Use them wisely, and always
-study the decorator code itself, so you know what it is doing.
-
-**Note** When using decorators without arguments, Elixir warns you
-with a message *warning: module attribute @some_decorator in code
-block has no effect as it is never returned*. This is unfortunate but
-cannot be prevented.
