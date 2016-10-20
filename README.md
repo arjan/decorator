@@ -61,7 +61,8 @@ Defining the decorator is pretty easy. Create a module in which you
 *use* the `Decorator.Define` module, passing in the decorator name and
 arity, or more than one if you want.
 
-The following defines a print() decorator which prints a message every time the function is called:
+The following declares a `@print` decorator which prints a message
+every time the function is called:
 
 ```elixir
 defmodule PrintDecorator do
@@ -77,14 +78,10 @@ defmodule PrintDecorator do
 end
 ```
 
-Note that `print()` here is a function, not a macro! The actual macro
-has arity 0, and will be imported in the caller module. The decorator
-module's `print()` function gets called when the actual function is
-being defined.
-
-The arguments to the decorator function are the function's body (the
-AST), as well as a `context` argument which holds information like the
-function's name, defining module, arity and the arguments AST.
+The arguments to the decorator function (the `def print(...)`) are the
+function's body (the AST), as well as a `context` argument which holds
+information like the function's name, defining module, arity and the
+arguments AST.
 
 
 ### Compile-time arguments
@@ -92,7 +89,8 @@ function's name, defining module, arity and the arguments AST.
 Decorators can have compile-time arguments passed into the decorator
 macros.
 
-For instance, you could let the print function only print when a certain logging level has been set:
+For instance, you could let the print function only print when a
+certain logging level has been set:
 
 ```elixir
 @print(:debug)
@@ -104,7 +102,7 @@ In this case, you specify the arity 1 for the decorator:
 
 ```elixir
 defmodule PrintDecorator do
-use Decorator.Define, [print: 1]
+  use Decorator.Define, [print: 1]
 ```
 
 And then your `print()` decorator function gets the level passed in as
