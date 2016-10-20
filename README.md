@@ -95,7 +95,7 @@ certain logging level has been set:
 ```elixir
 @print(:debug)
 def foo() do
-...
+  ...
 ```
 
 In this case, you specify the arity 1 for the decorator:
@@ -110,6 +110,6 @@ the first argument:
 
 ```elixir
 def print(level, body, context) do
-# ...
+  # ...
 end
 ```
