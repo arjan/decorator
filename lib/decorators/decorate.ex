@@ -14,7 +14,7 @@ defmodule Decorator.Decorate do
     {name, _, args_ast} = fn_call_ast
     context = %Context{
       name: name,
-      arity: Enum.count(args_ast),
+      arity: Enum.count(args_ast || []),
       args: args_ast,
       module: decoratee_mod}
 
