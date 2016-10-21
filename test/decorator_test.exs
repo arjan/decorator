@@ -100,4 +100,17 @@ defmodule DecoratorTest do
 
   end
 
+  defmodule PrivateDecorated do
+    use FunctionResultDecorator
+
+    def pub(x), do: foo(x)
+
+    @function_result(:foo)
+    defp foo(x), do: x
+  end
+
+  test "private functions can be decorated" do
+    assert {:foo, :bar} == PrivateDecorated.pub(:bar)
+  end
+
 end

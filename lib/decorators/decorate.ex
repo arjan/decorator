@@ -4,11 +4,22 @@ defmodule Decorator.Decorate do
     defstruct name: nil, arity: nil, module: nil, args: nil
   end
 
-
   defmacro def(fn_call_ast, fn_opts_ast \\ nil) do
+    {fn_call_ast, body} = decorated_fn_body(fn_call_ast, fn_opts_ast, __CALLER__)
+    quote do
+      Kernel.def(unquote(fn_call_ast), unquote([do: body]))
+    end
+  end
 
+  defmacro defp(fn_call_ast, fn_opts_ast \\ nil) do
+    {fn_call_ast, body} = decorated_fn_body(fn_call_ast, fn_opts_ast, __CALLER__)
+    quote do
+      Kernel.defp(unquote(fn_call_ast), unquote([do: body]))
+    end
+  end
+
+  defp decorated_fn_body(fn_call_ast, fn_opts_ast, __CALLER__) do
     decoratee_mod = __CALLER__.module
-
     [do: body] = fn_opts_ast
 
     {name, _, args_ast} = fn_call_ast
@@ -31,10 +42,7 @@ defmodule Decorator.Decorate do
 
     Module.delete_attribute(decoratee_mod, :decorators)
 
-    quote do
-      Kernel.def(
-        unquote(fn_call_ast), unquote([do: body]))
-    end
+    {fn_call_ast, body}
   end
 
 end

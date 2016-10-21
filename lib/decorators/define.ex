@@ -14,8 +14,8 @@ defmodule Decorator.Define do
         Module.register_attribute(__CALLER__.module, :decorators, accumulate: true)
 
         quote do
-          import Kernel, except: [@: 1, def: 2]
-          import Decorator.Decorate, only: [def: 2]
+          import Kernel, except: [@: 1, def: 2, defp: 2]
+          import Decorator.Decorate, only: [def: 2, defp: 2]
           import unquote(sub), only: [@: 1]
         end
 
