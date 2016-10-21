@@ -17,6 +17,9 @@ defmodule DecoratorTest do
     def square(a) do
       a * a
     end
+
+    @some_decorator
+    def answer, do: 24
   end
 
   test "basic function decoration" do
@@ -24,6 +27,9 @@ defmodule DecoratorTest do
     assert 16 == MyModule.square(4)
   end
 
+  test "decorate function with no argument list" do
+    assert 24 == MyModule.answer
+  end
 
 
   # Example decorator which modifies the return value of the function
