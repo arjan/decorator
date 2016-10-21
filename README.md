@@ -24,7 +24,7 @@ decorator code itself, so you know what it is doing.
 with a message *warning: module attribute @some_decorator in code
 block has no effect as it is never returned*. This is unfortunate but
 cannot be prevented, as this warning is emitted in a very early stage
-of compilation.
+of compilation. As a workaround, silence the warning with `_ = @some_decorator`.
 
 
 ## Installation

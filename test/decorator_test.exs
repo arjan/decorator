@@ -13,7 +13,7 @@ defmodule DecoratorTest do
   defmodule MyModule do
     use MyDecorator
 
-    @some_decorator
+    _ = @some_decorator
     def square(a) do
       a * a
     end
@@ -107,7 +107,7 @@ defmodule DecoratorTest do
   defmodule MyIsAuthorizedModule do
     use PreconditionDecorator
 
-    @is_authorized()
+    _ = @is_authorized
     def perform(conn) do
       :ok
     end
