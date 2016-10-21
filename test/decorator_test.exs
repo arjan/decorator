@@ -71,6 +71,21 @@ defmodule DecoratorTest do
     assert {"b", {:a, 4}} == MyFunctionResultModule.square_multiple(2)
   end
 
+  defmodule DecoratedFunctionClauses do
+    use FunctionResultDecorator
+
+    @function_result(:ok)
+    def foo(n) when is_number(n), do: n
+
+    @function_result(:error)
+    def foo(x), do: x
+  end
+
+  test "decorating a function with many clauses" do
+    assert {:ok, 22} == DecoratedFunctionClauses.foo(22)
+    assert {:error, "string"} == DecoratedFunctionClauses.foo("string")
+  end
+
 
   # Example decorator which uses one of the function arguments to
   # perform a precondition check.
