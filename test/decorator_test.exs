@@ -13,12 +13,12 @@ defmodule DecoratorTest do
   defmodule MyModule do
     use MyDecorator
 
-    @decorator some_decorator
+    @decorate some_decorator
     def square(a) do
       a * a
     end
 
-    @decorator some_decorator
+    @decorate some_decorator
     def answer, do: 24
 
     @value 123
@@ -60,18 +60,18 @@ defmodule DecoratorTest do
   defmodule MyFunctionResultModule do
     use FunctionResultDecorator
 
-    @decorator function_result(:ok)
+    @decorate function_result(:ok)
     def square(a) do
       a * a
     end
 
-    @decorator function_result(:error)
+    @decorate function_result(:error)
     def square_error(a) do
       a * a
     end
 
-    @decorator function_result(:a)
-    @decorator function_result("b")
+    @decorate function_result(:a)
+    @decorate function_result("b")
     def square_multiple(a) do
       a * a
     end
@@ -86,10 +86,10 @@ defmodule DecoratorTest do
   defmodule DecoratedFunctionClauses do
     use FunctionResultDecorator
 
-    @decorator function_result(:ok)
+    @decorate function_result(:ok)
     def foo(n) when is_number(n), do: n
 
-    @decorator function_result(:error)
+    @decorate function_result(:error)
     def foo(x), do: x
   end
 
@@ -119,7 +119,7 @@ defmodule DecoratorTest do
   defmodule MyIsAuthorizedModule do
     use PreconditionDecorator
 
-    @decorator is_authorized
+    @decorate is_authorized
     def perform(conn) do
       :ok
     end
@@ -138,7 +138,7 @@ defmodule DecoratorTest do
 
     def pub(x), do: foo(x)
 
-    @decorator function_result(:foo)
+    @decorate function_result(:foo)
     defp foo(x), do: x
   end
 
@@ -152,7 +152,7 @@ defmodule DecoratorTest do
     definition = quote do
       use FunctionResultDecorator
 
-      @decorator nonexisting
+      @decorate nonexisting
       def foo do
       end
     end
@@ -171,7 +171,7 @@ defmodule DecoratorTest do
 
         @bar 33
 
-        @decorator 1111111111111
+        @decorate 1111111111111
         def foo do
         end
       end
@@ -179,5 +179,58 @@ defmodule DecoratorTest do
 
   end
 
+
+  # test "should throw error when using decorator macro outside @decorate" do
+
+  #   assert_raise ArgumentError, fn ->
+  #     defmodule InvalidDecoratorUseModule do
+  #       use FunctionResultDecorator
+
+  #       def foo do
+  #         function_result(:bar)
+  #       end
+  #     end
+  #   end
+
+  # end
+
+  test "should throw error when using decorator wrong arity" do
+
+    assert_raise ArgumentError, fn ->
+      defmodule InvalidDecoratorArityUseModule do
+        use FunctionResultDecorator
+
+        @decorate function_result
+        def foo do
+        end
+      end
+    end
+
+  end
+
+  # two arguments
+  defmodule TwoArgumentDecorator do
+    use Decorator.Define, [two: 2]
+
+    def two(one, two, body, _context) do
+      quote do
+        {unquote(one), unquote(two), unquote(body)}
+      end
+    end
+
+  end
+
+  defmodule MyTwoFunctionTestModule do
+    use TwoArgumentDecorator
+
+    @decorate two(1, 2)
+    def result(a) do
+      a
+    end
+  end
+
+  test "Two arguments" do
+    assert {1, 2, 3} == MyTwoFunctionTestModule.result(3)
+  end
 
 end

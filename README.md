@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/arjan/decorator.png?branch=master)](https://travis-ci.org/arjan/decorator)
 [![Hex pm](http://img.shields.io/hexpm/v/decorator.svg?style=flat)](https://hex.pm/packages/decorator)
 
-A function decorator is a "`@decorator`" annotation that is put just
+A function decorator is a "`@decorate`" annotation that is put just
 before a function definition.  It can be used to add extra
 functionality to Elixir functions. The runtime overhead of a function
 decorator is zero, as it is executed on compile time.
@@ -20,7 +20,7 @@ think they are just another form of metaprogramming, one of Elixir's
 selling points. But use decorators wisely, and always study the
 decorator code itself, so you know what it is doing.
 
-Decorators are always marked with the `@decorator` literal, so that
+Decorators are always marked with the `@decorate` literal, so that
 it's clear in the code that decorators are being used.
 
 
@@ -45,7 +45,7 @@ function. It looks like this:
 defmodule MyModule do
   use PrintDecorator
 
-  @decorator print()
+  @decorate print()
   def square(a) do
     a * a
   end
@@ -90,7 +90,7 @@ For instance, you could let the print function only print when a
 certain logging level has been set:
 
 ```elixir
-@decorator print(:debug)
+@decorate print(:debug)
 def foo() do
 ...
 ```

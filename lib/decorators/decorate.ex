@@ -34,7 +34,12 @@ defmodule Decorator.Decorate do
       decorators
       |> Enum.reverse
       |> Enum.reduce(body, fn({module, fun, args}, body) ->
-        Kernel.apply(module, fun, (args || []) ++ [body, context])
+        args = args || []
+        if Enum.member?(module.__info__(:exports), {fun, Enum.count(args) + 2}) do
+          Kernel.apply(module, fun, (args || []) ++ [body, context])
+        else
+          raise ArgumentError, "Unknown decorator function: #{fun}/#{Enum.count(args)}"
+        end
       end)
     else
       body

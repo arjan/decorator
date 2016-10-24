@@ -3,7 +3,7 @@ defmodule Decorator.Mixfile do
 
   def project do
     [app: :decorator,
-     version: "0.3.0",
+     version: "0.4.0",
      elixir: "~> 1.3",
      description: description(),
      package: package(),
