@@ -180,19 +180,19 @@ defmodule DecoratorTest do
   end
 
 
-  # test "should throw error when using decorator macro outside @decorate" do
+  test "should throw error when using decorator macro outside @decorate" do
 
-  #   assert_raise ArgumentError, fn ->
-  #     defmodule InvalidDecoratorUseModule do
-  #       use FunctionResultDecorator
+    assert_raise ArgumentError, fn ->
+      defmodule InvalidDecoratorUseModule do
+        use FunctionResultDecorator
 
-  #       def foo do
-  #         function_result(:bar)
-  #       end
-  #     end
-  #   end
+        def foo do
+          function_result(:bar)
+        end
+      end
+    end
 
-  # end
+  end
 
   test "should throw error when using decorator wrong arity" do
 
