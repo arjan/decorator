@@ -9,7 +9,7 @@ defmodule Decorator.Define do
 
       defmacro __using__(_) do
         sub = Module.concat(__CALLER__.module, Decorators)
-        Module.create(sub, Decorator.Define.generate_at_macro(@decorator_defs |> Enum.into(%{}), __CALLER__.module, __MODULE__), __CALLER__)
+        Module.create(sub, Decorator.Define.generate_at_macro(__CALLER__.module, __MODULE__), __CALLER__)
 
         Module.register_attribute(__CALLER__.module, :decorators, accumulate: true)
 
@@ -24,15 +24,17 @@ defmodule Decorator.Define do
 
   end
 
-  def generate_at_macro(decorators, outer_module, inner_module) do
+  def generate_at_macro(outer_module, inner_module) do
     quote do
-      defmacro @({name, _, args}) do
-        if Map.has_key?(unquote(Macro.escape(decorators)), name) do
-          Module.put_attribute(unquote(outer_module), :decorators, {unquote(inner_module), name, args})
-          #IO.puts("defining decorator: #{name} #{inspect args} in #{__CALLER__.module}")
-        else
-          Decorator.KernelAtOverride.handle_at(__CALLER__, name, args)
-        end
+      defmacro @({:decorator, _, [{name, _, args}]}) do
+        decorator = {unquote(inner_module), name, args}
+        Module.put_attribute(unquote(outer_module), :decorators, decorator)
+      end
+      defmacro @({:decorator, _, args}) do
+        raise ArgumentError, "Invalid argument for decorator annotation: #{inspect args}"
+      end
+      defmacro @({name, _, args}=a) do
+        Decorator.KernelAtOverride.handle_at(__CALLER__, name, args)
       end
     end
   end

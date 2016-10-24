@@ -13,12 +13,12 @@ defmodule DecoratorTest do
   defmodule MyModule do
     use MyDecorator
 
-    @some_decorator
+    @decorator some_decorator
     def square(a) do
       a * a
     end
 
-    @some_decorator
+    @decorator some_decorator
     def answer, do: 24
   end
 
@@ -48,18 +48,18 @@ defmodule DecoratorTest do
   defmodule MyFunctionResultModule do
     use FunctionResultDecorator
 
-    @function_result(:ok)
+    @decorator function_result(:ok)
     def square(a) do
       a * a
     end
 
-    @function_result(:error)
+    @decorator function_result(:error)
     def square_error(a) do
       a * a
     end
 
-    @function_result(:a)
-    @function_result("b")
+    @decorator function_result(:a)
+    @decorator function_result("b")
     def square_multiple(a) do
       a * a
     end
@@ -74,10 +74,10 @@ defmodule DecoratorTest do
   defmodule DecoratedFunctionClauses do
     use FunctionResultDecorator
 
-    @function_result(:ok)
+    @decorator function_result(:ok)
     def foo(n) when is_number(n), do: n
 
-    @function_result(:error)
+    @decorator function_result(:error)
     def foo(x), do: x
   end
 
@@ -107,7 +107,7 @@ defmodule DecoratorTest do
   defmodule MyIsAuthorizedModule do
     use PreconditionDecorator
 
-    @is_authorized()
+    @decorator is_authorized()
     def perform(conn) do
       :ok
     end
@@ -126,12 +126,30 @@ defmodule DecoratorTest do
 
     def pub(x), do: foo(x)
 
-    @function_result(:foo)
+    @decorator function_result(:foo)
     defp foo(x), do: x
   end
 
   test "private functions can be decorated" do
     assert {:foo, :bar} == PrivateDecorated.pub(:bar)
+  end
+
+
+
+  test "should throw error when defining an invalid decorator" do
+
+    definition = quote do
+      use FunctionResultDecorator
+
+      @decorator :foobar
+      def foo do
+      end
+    end
+
+    assert_raise ArgumentError, fn ->
+      Module.create(NonModuleDefine, definition, [])
+    end
+
   end
 
 end
