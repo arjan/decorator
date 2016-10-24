@@ -138,8 +138,8 @@ def is_authorized(body, %{args: [conn, _params]}) do
       unquote(body)
     else
       unquote(conn)
- +    |> send_resp(401, "unauthorized")
-+     |> halt()
+      |> send_resp(401, "unauthorized")
+      |> halt()
     end
   end
 end
