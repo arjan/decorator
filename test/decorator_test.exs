@@ -20,6 +20,13 @@ defmodule DecoratorTest do
 
     @decorator some_decorator
     def answer, do: 24
+
+    @value 123
+    def value123, do: @value
+
+    @value 666
+    def value666, do: @value
+
   end
 
   test "basic function decoration" do
@@ -29,6 +36,11 @@ defmodule DecoratorTest do
 
   test "decorate function with no argument list" do
     assert 24 == MyModule.answer
+  end
+
+  test "normal module attributes should still work" do
+    assert 123 == MyModule.value123
+    assert 666 == MyModule.value666
   end
 
 
@@ -107,7 +119,7 @@ defmodule DecoratorTest do
   defmodule MyIsAuthorizedModule do
     use PreconditionDecorator
 
-    @decorator is_authorized()
+    @decorator is_authorized
     def perform(conn) do
       :ok
     end
@@ -135,21 +147,37 @@ defmodule DecoratorTest do
   end
 
 
-
-  test "should throw error when defining an invalid decorator" do
+  test "should throw error when defining an unknown decorator" do
 
     definition = quote do
       use FunctionResultDecorator
 
-      @decorator :foobar
+      @decorator nonexisting
       def foo do
       end
     end
 
+    assert_raise CompileError, fn ->
+      Module.create(NonExistingDecoratorModule, definition, [file: "test.ex"])
+    end
+  end
+
+
+  test "should throw error when defining an invalid decorator" do
+
     assert_raise ArgumentError, fn ->
-      Module.create(NonModuleDefine, definition, [])
+      defmodule InvalidDecoratorModule do
+        use FunctionResultDecorator
+
+        @bar 33
+
+        @decorator 1111111111111
+        def foo do
+        end
+      end
     end
 
   end
+
 
 end
