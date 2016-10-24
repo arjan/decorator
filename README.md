@@ -45,7 +45,7 @@ function. It looks like this:
 defmodule MyModule do
   use PrintDecorator
 
-  @decorate print()
+  @decorate print
   def square(a) do
     a * a
   end
@@ -102,11 +102,45 @@ defmodule PrintDecorator do
   use Decorator.Define, [print: 1]
 ```
 
-And then your `print()` decorator function gets the level passed in as
+And then your `print/3` decorator function gets the level passed in as
 the first argument:
 
 ```elixir
 def print(level, body, context) do
 # ...
+end
+```
+
+### Decorator context
+
+Besides the function body AST, the decorator function also gets a
+*context* argument passed in. This context holds information about the
+function being decorated, namely its module, function name, arity, and
+arguments as a list of AST nodes.
+
+The print decorator can print its function name like this:
+
+```elixir
+def print(body, context) do
+  Logger.debug("Function #{context.name}/#{context.arity} called in module #{context.module}!"
+end
+```
+
+Even more advanced, you can use the function arguments in the
+decorator.  To create an `is_authorized` decorator which performs some
+checks on the Phoenix %Conn{} structure, you can create a decorator
+function like this:
+
+```elixir
+def is_authorized(body, %{args: [conn, _params]}) do
+  quote do
+    if unquote(conn).assigns.user do
+      unquote(body)
+    else
+      unquote(conn)
+ +    |> send_resp(401, "unauthorized")
++     |> halt()
+    end
+  end
 end
 ```
