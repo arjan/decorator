@@ -152,7 +152,7 @@ defmodule DecoratorTest do
     definition = quote do
       use FunctionResultDecorator
 
-      @decorate nonexisting
+      @decorate nonexisting()
       def foo do
       end
     end
@@ -231,6 +231,29 @@ defmodule DecoratorTest do
 
   test "Two arguments" do
     assert {1, 2, 3} == MyTwoFunctionTestModule.result(3)
+  end
+
+
+
+  defmodule FunctionDocTestModule do
+    use TwoArgumentDecorator
+
+    @doc "result function which does some things"
+    def result(a) do
+      a
+    end
+
+    @doc "result function which does some things"
+    @decorate two(1, 2)
+    def result2(a) do
+      a
+    end
+
+  end
+
+  test "Functions with module doc" do
+    assert 3 == FunctionDocTestModule.result(3)
+    assert {1, 2, 3} == FunctionDocTestModule.result2(3)
   end
 
 end

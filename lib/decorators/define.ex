@@ -58,8 +58,8 @@ defmodule Decorator.Define do
       defmacro @({:decorate, _, args}) do
         raise ArgumentError, "Invalid argument for decorator annotation: #{inspect args}"
       end
-      defmacro @({name, _, args}=a) do
-        Decorator.KernelAtOverride.handle_at(__CALLER__, name, args)
+      defmacro @({name, meta, args}=a) do
+        Decorator.KernelAtOverride.handle_at(__CALLER__, name, meta, args)
       end
     end
   end
