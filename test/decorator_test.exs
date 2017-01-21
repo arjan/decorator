@@ -13,12 +13,12 @@ defmodule DecoratorTest do
   defmodule MyModule do
     use MyDecorator
 
-    @decorate some_decorator
+    @decorate some_decorator()
     def square(a) do
       a * a
     end
 
-    @decorate some_decorator
+    @decorate some_decorator()
     def answer, do: 24
 
     @value 123
@@ -119,7 +119,7 @@ defmodule DecoratorTest do
   defmodule MyIsAuthorizedModule do
     use PreconditionDecorator
 
-    @decorate is_authorized
+    @decorate is_authorized()
     def perform(conn) do
       :ok
     end
@@ -200,7 +200,7 @@ defmodule DecoratorTest do
       defmodule InvalidDecoratorArityUseModule do
         use FunctionResultDecorator
 
-        @decorate function_result
+        @decorate function_result()
         def foo do
         end
       end
