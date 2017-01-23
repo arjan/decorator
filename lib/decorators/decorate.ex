@@ -13,12 +13,36 @@ defmodule Decorator.Decorate do
 
   defmacro before_compile(env) do
     decorated = Module.get_attribute(env.module, :decorated)
+    Module.delete_attribute(env.module, :decorated)
 
     decorated
     |> Enum.reverse
+    |> filter_undecorated()
     |> Enum.reduce({nil, []}, fn(d, acc) -> decorate(env, d, acc) end)
     |> elem(1)
     |> Enum.reverse
+  end
+
+  # Remove all defs which are not decorated -- these doesn't need to be redefined.
+  defp filter_undecorated(all) do
+    decorated = all
+    |> Enum.group_by(
+    fn({_kind, fun, args, _guard, _body, _decorators}) ->
+      {fun, Enum.count(args)}
+    end,
+    fn({_kind, _fun, _args, _guard, _body, decorators}) ->
+      decorators
+    end)
+    |> Enum.filter_map(
+    fn({_k, decorators_list}) ->
+      List.flatten(decorators_list) != []
+    end,
+    fn({k, _decorators_list}) -> k end)
+
+    all |> Enum.filter(
+      fn({_kind, fun, args, _guard, _body, _decorators}) ->
+        Enum.member?(decorated, {fun, Enum.count(args)})
+      end)
   end
 
 
@@ -28,11 +52,6 @@ defmodule Decorator.Decorate do
     override_clause = quote do
       defoverridable [{unquote(fun), unquote(arity)}]
     end
-
-    guard = case guard do
-              [] -> [true]
-              _ -> guard
-            end
 
     context = %Context{
       name: fun,
@@ -46,11 +65,21 @@ defmodule Decorator.Decorate do
       apply_decorator(context, decorator, body)
     end)
 
-    def_clause = quote do
-      Kernel.unquote(kind)(unquote(fun)(unquote_splicing(args)) when unquote_splicing(guard)) do
-        unquote(body)
+    def_clause =
+      case guard do
+        [] ->
+          quote do
+            Kernel.unquote(kind)(unquote(fun)(unquote_splicing(args))) do
+              unquote(body)
+            end
+          end
+        _ ->
+          quote do
+            Kernel.unquote(kind)(unquote(fun)(unquote_splicing(args)) when unquote_splicing(guard)) do
+              unquote(body)
+            end
+          end
       end
-    end
 
     if fun != prev_fun do
       {fun, [def_clause, override_clause | all]}

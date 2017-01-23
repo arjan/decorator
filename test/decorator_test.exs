@@ -196,7 +196,7 @@ defmodule DecoratorTest do
 
   test "should throw error when using decorator wrong arity" do
 
-    assert_raise ArgumentError, fn ->
+    assert_raise CompileError, fn ->
       defmodule InvalidDecoratorArityUseModule do
         use FunctionResultDecorator
 

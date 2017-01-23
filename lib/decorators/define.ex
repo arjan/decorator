@@ -5,10 +5,11 @@ defmodule Decorator.Define do
 
     decorator_macros = for {decorator, arity} <- decorators do
       arglist = Decorator.Decorate.generate_args(arity, decorator_module)
-      arity = Enum.count(arglist)
-
       quote do
         defmacro unquote(decorator)(unquote_splicing(arglist)) do
+          if Module.get_attribute(__CALLER__.module, :decorate) != nil do
+            raise ArgumentError, "Decorator #{unquote(decorator)} used without @decorate"
+          end
           Macro.escape({unquote(decorator_module), unquote(decorator), unquote(arglist)})
         end
       end
