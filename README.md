@@ -45,7 +45,7 @@ function. It looks like this:
 defmodule MyModule do
   use PrintDecorator
 
-  @decorate print
+  @decorate print()
   def square(a) do
     a * a
   end
