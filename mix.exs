@@ -5,6 +5,7 @@ defmodule Decorator.Mixfile do
     [app: :decorator,
      version: "1.2.0",
      elixir: "~> 1.3",
+     elixirc_options: [warnings_as_errors: true],
      description: description(),
      package: package(),
      source_url: "https://github.com/arjan/decorator",

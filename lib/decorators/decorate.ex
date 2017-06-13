@@ -45,13 +45,21 @@ defmodule Decorator.Decorate do
       end)
   end
 
+  defp implied_arities(args) do
+    arity = Enum.count(args)
+    default_count =
+      args
+      |> Enum.filter(fn({:\\, _, _}) -> true; (_) -> false end)
+      |> Enum.count
+    :lists.seq(arity, arity - default_count, -1)
+  end
 
   defp decorate(env, {kind, fun, args, guard, body, decorators}, {prev_fun, all}) do
-    arity = Enum.count(args)
-
-    override_clause = quote do
-      defoverridable [{unquote(fun), unquote(arity)}]
-    end
+    override_clause =
+      implied_arities(args)
+      |> Enum.map(&(quote do
+                     defoverridable [{unquote(fun), unquote(&1)}]
+        end))
 
     context = %Context{
       name: fun,
