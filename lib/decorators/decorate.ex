@@ -33,11 +33,10 @@ defmodule Decorator.Decorate do
     fn({_kind, _fun, _args, _guard, _body, decorators}) ->
       decorators
     end)
-    |> Enum.filter_map(
-    fn({_k, decorators_list}) ->
+    |> Enum.filter(fn({_k, decorators_list}) ->
       List.flatten(decorators_list) != []
-    end,
-    fn({k, _decorators_list}) -> k end)
+    end)
+    |> Enum.map(fn({k, _decorators_list}) -> k end)
 
     all |> Enum.filter(
       fn({_kind, fun, args, _guard, _body, _decorators}) ->
@@ -72,20 +71,17 @@ defmodule Decorator.Decorate do
     |> Enum.reduce(body, fn(decorator, body) ->
       apply_decorator(context, decorator, body)
     end)
+    |> ensure_do()
 
     def_clause =
       case guard do
         [] ->
           quote do
-            Kernel.unquote(kind)(unquote(fun)(unquote_splicing(args))) do
-              unquote(body)
-            end
+            Kernel.unquote(kind)(unquote(fun)(unquote_splicing(args)), unquote(body))
           end
         _ ->
           quote do
-            Kernel.unquote(kind)(unquote(fun)(unquote_splicing(args)) when unquote_splicing(guard)) do
-              unquote(body)
-            end
+            Kernel.unquote(kind)(unquote(fun)(unquote_splicing(args)) when unquote_splicing(guard), unquote(body))
           end
       end
 
@@ -96,6 +92,15 @@ defmodule Decorator.Decorate do
     end
   end
 
+  defp ensure_do([{:do, _} | _] = body), do: body
+  defp ensure_do(body), do: [do: body]
+
+  defp apply_decorator(context, mfa, [do: body]) do
+    [do: apply_decorator(context, mfa, body)]
+  end
+  defp apply_decorator(context, mfa, [do: body, rescue: rescue_block]) do
+    [do: apply_decorator(context, mfa, body), rescue: apply_decorator_to_rescue(context, mfa, rescue_block)]
+  end
   defp apply_decorator(context, {module, fun, args}, body) do
     if Enum.member?(module.__info__(:exports), {fun, Enum.count(args) + 2}) do
       Kernel.apply(module, fun, (args || []) ++ [body, context])
@@ -105,6 +110,13 @@ defmodule Decorator.Decorate do
   end
   defp apply_decorator(_context, decorator, _body) do
     raise ArgumentError, "Invalid decorator: #{inspect decorator}"
+  end
+
+  defp apply_decorator_to_rescue(context, mfa, rescue_block) do
+    rescue_block
+    |> Enum.map(fn({:->, meta, [match, body]}) ->
+      {:->, meta, [match, apply_decorator(context, mfa, body)]}
+    end)
   end
 
   def generate_args(0, _caller), do: []
