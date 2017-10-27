@@ -102,7 +102,7 @@ defmodule Decorator.Decorate do
     [do: apply_decorator(context, mfa, body), rescue: apply_decorator_to_rescue(context, mfa, rescue_block)]
   end
   defp apply_decorator(context, {module, fun, args}, body) do
-    if Enum.member?(module.__info__(:exports), {fun, Enum.count(args) + 2}) do
+    if Enum.member?(module.__info__(:functions), {fun, Enum.count(args) + 2}) do
       Kernel.apply(module, fun, (args || []) ++ [body, context])
     else
       raise ArgumentError, "Unknown decorator function: #{fun}/#{Enum.count(args)}"
