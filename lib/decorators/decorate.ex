@@ -6,7 +6,11 @@ defmodule Decorator.Decorate do
 
   def on_definition(env, kind, fun, args, guards, body) do
     decorators = Module.get_attribute(env.module, :decorate)
-    decorated = {kind, fun, args, guards, body, decorators}
+    all_decorators = Module.get_attribute(env.module, :decorate_all)
+
+    all_decorators = decorators ++ all_decorators
+
+    decorated = {kind, fun, args, guards, body, all_decorators}
     Module.put_attribute(env.module, :decorated, decorated)
     Module.delete_attribute(env.module, :decorate)
   end
@@ -18,8 +22,8 @@ defmodule Decorator.Decorate do
     decorated
     |> Enum.reverse
     |> filter_undecorated()
-    |> Enum.reduce({nil, []}, fn(d, acc) -> decorate(env, d, acc) end)
-    |> elem(1)
+    |> Enum.reduce({nil, nil, []}, fn(d, acc) -> decorate(env, d, acc) end)
+    |> elem(2)
     |> Enum.reverse
   end
 
@@ -53,7 +57,7 @@ defmodule Decorator.Decorate do
     :lists.seq(arity, arity - default_count, -1)
   end
 
-  defp decorate(env, {kind, fun, args, guard, body, decorators}, {prev_fun, all}) do
+  defp decorate(env, {kind, fun, args, guard, body, decorators}, {prev_fun, prev_arity, all}) do
     override_clause =
       implied_arities(args)
       |> Enum.map(&(quote do
@@ -85,10 +89,10 @@ defmodule Decorator.Decorate do
           end
       end
 
-    if fun != prev_fun do
-      {fun, [def_clause, override_clause | all]}
+    if fun != prev_fun || context.arity != prev_arity do
+      {fun, context.arity, [def_clause, override_clause | all]}
     else
-      {fun, [def_clause | all]}
+      {fun, context.arity, [def_clause | all]}
     end
   end
 
