@@ -30,7 +30,7 @@ Add `decorator` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:decorator, "~> 0.0"}]
+  [{:decorator, "~> 1.2"}]
 end
 ```
 
@@ -122,7 +122,7 @@ The print decorator can print its function name like this:
 
 ```elixir
 def print(body, context) do
-  Logger.debug("Function #{context.name}/#{context.arity} called in module #{context.module}!"
+  Logger.debug("Function #{context.name}/#{context.arity} called in module #{context.module}!")
 end
 ```
 
