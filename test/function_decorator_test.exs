@@ -40,6 +40,17 @@ defmodule DecoratorTest.Fixture.DecoratedFunctionClauses do
   def foo(x), do: x
 end
 
+defmodule DecoratorTest.Fixture.DecoratedFunctionWithDifferentArities do
+  use DecoratorTest.Fixture.FunctionResultDecorator
+
+  @decorate function_result(:ok)
+  def testfun(a,b) do a + b end
+  @decorate function_result(:ok)
+  def testfun(a) do a end
+
+end
+
+
 defmodule DecoratorTest.Fixture.PrivateDecorated do
   use DecoratorTest.Fixture.FunctionResultDecorator
 
@@ -55,6 +66,7 @@ defmodule DecoratorTest.FunctionDecorator do
   alias DecoratorTest.Fixture.{
     MyFunctionResultModule, 
     DecoratedFunctionClauses,
+    DecoratedFunctionWithDifferentArities,
     FunctionResultDecorator,
     PrivateDecorated
   }
@@ -69,6 +81,15 @@ defmodule DecoratorTest.FunctionDecorator do
     assert {:ok, 22} == DecoratedFunctionClauses.foo(22)
     assert {:error, "string"} == DecoratedFunctionClauses.foo("string")
   end
+
+
+
+  test "decorating a function with different arity heads" do
+      assert {:ok, 3} == DecoratedFunctionWithDifferentArities.testfun(1,2)
+      assert {:ok, 5} == DecoratedFunctionWithDifferentArities.testfun(5)
+
+    end
+
 
   test "should throw error when defining an unknown decorator" do
     definition = quote do
