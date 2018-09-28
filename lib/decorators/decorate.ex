@@ -12,35 +12,39 @@ defmodule Decorator.Decorate do
   end
 
   defmacro before_compile(env) do
-    decorated = Module.get_attribute(env.module, :decorated)
+    decorated = Module.get_attribute(env.module, :decorated) |> Enum.reverse()
     Module.delete_attribute(env.module, :decorated)
 
+    decorated_functions = decorated_functions(decorated)
+
     decorated
-    |> Enum.reverse
-    |> filter_undecorated()
-    |> Enum.reduce({nil, []}, fn(d, acc) -> decorate(env, d, acc) end)
+    |> filter_undecorated(decorated_functions)
+    |> Enum.reduce({nil, []}, fn(d, acc) ->
+      decorate(env, d, decorated_functions, acc)
+    end)
     |> elem(1)
     |> Enum.reverse
   end
 
-  # Remove all defs which are not decorated -- these doesn't need to be redefined.
-  defp filter_undecorated(all) do
-    decorated = all
-    |> Enum.group_by(
-    fn({_kind, fun, args, _guard, _body, _decorators}) ->
-      {fun, Enum.count(args)}
-    end,
-    fn({_kind, _fun, _args, _guard, _body, decorators}) ->
-      decorators
-    end)
+  defp decorated_functions(all) do
+    Enum.group_by(all,
+      fn({_kind, fun, args, _guard, _body, _decorators}) ->
+        {fun, Enum.count(args)}
+      end,
+      fn({_kind, _fun, _args, _guard, _body, decorators}) ->
+        decorators
+      end)
     |> Enum.filter(fn({_k, decorators_list}) ->
       List.flatten(decorators_list) != []
     end)
-    |> Enum.map(fn({k, _decorators_list}) -> k end)
+    |> Enum.into(%{})
+  end
 
+  # Remove all defs which are not decorated -- these doesn't need to be redefined.
+  defp filter_undecorated(all, decorated_functions) do
     all |> Enum.filter(
       fn({_kind, fun, args, _guard, _body, _decorators}) ->
-        Enum.member?(decorated, {fun, Enum.count(args)})
+        Map.has_key?(decorated_functions, {fun, Enum.count(args)})
       end)
   end
 
@@ -53,20 +57,27 @@ defmodule Decorator.Decorate do
     :lists.seq(arity, arity - default_count, -1)
   end
 
-  defp decorate(env, {kind, fun, args, guard, body, decorators}, {prev_fun, all}) do
+  defp decorate(env, {kind, fun, args, guard, body, decorators},
+    decorated_functions, {prev_fun, all}) do
     override_clause =
       implied_arities(args)
       |> Enum.map(&(quote do
                      defoverridable [{unquote(fun), unquote(&1)}]
         end))
 
+    arity = Enum.count(args || [])
     context = %Context{
       name: fun,
-      arity: Enum.count(args || []),
+      arity: arity,
       args: args,
       module: env.module}
 
-    body = decorators
+    applicable_decorators = case decorators do
+      [] -> Map.get(decorated_functions, {fun, arity}) |> hd()
+      _ -> decorators
+    end
+
+    body = applicable_decorators
     |> Enum.reverse
     |> Enum.reduce(body, fn(decorator, body) ->
       apply_decorator(context, decorator, body)
