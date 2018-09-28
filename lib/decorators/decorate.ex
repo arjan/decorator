@@ -96,10 +96,11 @@ defmodule Decorator.Decorate do
           end
       end
 
-    if fun != prev_fun do
-      {fun, [def_clause, override_clause | all]}
+    arity = Enum.count(args)
+    if {fun, arity} != prev_fun do
+      {{fun, arity}, [def_clause, override_clause | all]}
     else
-      {fun, [def_clause | all]}
+      {{fun, arity}, [def_clause | all]}
     end
   end
 
