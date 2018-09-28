@@ -18,9 +18,14 @@ defmodule Decorator.Decorate do
     decorated
     |> Enum.reverse
     |> filter_undecorated()
+    |> reject_empty_clauses()
     |> Enum.reduce({nil, []}, fn(d, acc) -> decorate(env, d, acc) end)
     |> elem(1)
     |> Enum.reverse
+  end
+
+  defp reject_empty_clauses(all) do
+    Enum.reject(all, fn {_kind, _fun, _args, _guards, body, _decorators} -> body == nil end)
   end
 
   # Remove all defs which are not decorated -- these doesn't need to be redefined.
