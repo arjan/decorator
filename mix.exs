@@ -4,7 +4,7 @@ defmodule Decorator.Mixfile do
   def project do
     [
       app: :decorator,
-      version: "1.2.3",
+      version: File.read!("VERSION"),
       elixir: "~> 1.3",
       elixirc_options: [warnings_as_errors: true],
       description: description(),
@@ -23,7 +23,7 @@ defmodule Decorator.Mixfile do
 
   defp package do
     %{
-      files: ["lib", "mix.exs", "*.md", "LICENSE"],
+      files: ["lib", "mix.exs", "*.md", "LICENSE", "VERSION"],
       maintainers: ["Arjan Scherpenisse"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/arjan/decorator"}
