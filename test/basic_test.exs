@@ -1,5 +1,5 @@
 defmodule DecoratorTest.Fixture.MyDecorator do
-  use Decorator.Define, [some_decorator: 0]
+  use Decorator.Define, some_decorator: 0
 
   def some_decorator(body, _context) do
     body
@@ -34,11 +34,11 @@ defmodule DecoratorTest.Basic do
   end
 
   test "decorate function with no argument list" do
-    assert 24 == MyModule.answer
+    assert 24 == MyModule.answer()
   end
 
   test "normal module attributes should still work" do
-    assert 123 == MyModule.value123
-    assert 666 == MyModule.value666
+    assert 123 == MyModule.value123()
+    assert 666 == MyModule.value666()
   end
 end

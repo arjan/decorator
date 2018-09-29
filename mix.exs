@@ -2,17 +2,19 @@ defmodule Decorator.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :decorator,
-     version: "1.2.3",
-     elixir: "~> 1.3",
-     elixirc_options: [warnings_as_errors: true],
-     description: description(),
-     package: package(),
-     source_url: "https://github.com/arjan/decorator",
-     homepage_url: "https://github.com/arjan/decorator",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps()]
+    [
+      app: :decorator,
+      version: "1.2.3",
+      elixir: "~> 1.3",
+      elixirc_options: [warnings_as_errors: true],
+      description: description(),
+      package: package(),
+      source_url: "https://github.com/arjan/decorator",
+      homepage_url: "https://github.com/arjan/decorator",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      deps: deps()
+    ]
   end
 
   defp description do
@@ -20,11 +22,12 @@ defmodule Decorator.Mixfile do
   end
 
   defp package do
-    %{files: ["lib", "mix.exs",
-              "*.md", "LICENSE"],
+    %{
+      files: ["lib", "mix.exs", "*.md", "LICENSE"],
       maintainers: ["Arjan Scherpenisse"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/arjan/decorator"}}
+      links: %{"GitHub" => "https://github.com/arjan/decorator"}
+    }
   end
 
   def application do

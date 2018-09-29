@@ -1,7 +1,7 @@
 # Example decorator which modifies the return value of the function
 # by wrapping it in a tuple.
 defmodule DecoratorTest.Fixture.FunctionResultDecorator do
-  use Decorator.Define, [function_result: 1]
+  use Decorator.Define, function_result: 1
 
   def function_result(add, body, _context) do
     quote do
@@ -44,12 +44,15 @@ defmodule DecoratorTest.Fixture.DecoratedFunctionWithDifferentArities do
   use DecoratorTest.Fixture.FunctionResultDecorator
 
   @decorate function_result(:ok)
-  def testfun(a,b) do a + b end
+  def testfun(a, b) do
+    a + b
+  end
+
   @decorate function_result(:ok)
-  def testfun(a) do a end
-
+  def testfun(a) do
+    a
+  end
 end
-
 
 defmodule DecoratorTest.Fixture.PrivateDecorated do
   use DecoratorTest.Fixture.FunctionResultDecorator
@@ -63,8 +66,9 @@ end
 # Tests itself
 defmodule DecoratorTest.FunctionDecorator do
   use ExUnit.Case
+
   alias DecoratorTest.Fixture.{
-    MyFunctionResultModule, 
+    MyFunctionResultModule,
     DecoratedFunctionClauses,
     DecoratedFunctionWithDifferentArities,
     FunctionResultDecorator,
@@ -82,26 +86,23 @@ defmodule DecoratorTest.FunctionDecorator do
     assert {:error, "string"} == DecoratedFunctionClauses.foo("string")
   end
 
-
-
   test "decorating a function with different arity heads" do
-      assert {:ok, 3} == DecoratedFunctionWithDifferentArities.testfun(1,2)
-      assert {:ok, 5} == DecoratedFunctionWithDifferentArities.testfun(5)
-
-    end
-
+    assert {:ok, 3} == DecoratedFunctionWithDifferentArities.testfun(1, 2)
+    assert {:ok, 5} == DecoratedFunctionWithDifferentArities.testfun(5)
+  end
 
   test "should throw error when defining an unknown decorator" do
-    definition = quote do
-      use FunctionResultDecorator
+    definition =
+      quote do
+        use FunctionResultDecorator
 
-      @decorate nonexisting()
-      def foo do
+        @decorate nonexisting()
+        def foo do
+        end
       end
-    end
 
     assert_raise CompileError, fn ->
-      Module.create(NonExistingDecoratorModule, definition, [file: "test.ex"])
+      Module.create(NonExistingDecoratorModule, definition, file: "test.ex")
     end
   end
 
@@ -112,7 +113,7 @@ defmodule DecoratorTest.FunctionDecorator do
 
         @bar 33
 
-        @decorate 1111111111111
+        @decorate 1_111_111_111_111
         def foo do
         end
       end

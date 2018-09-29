@@ -1,13 +1,12 @@
 # two arguments
 defmodule DecoratorTest.Fixture.TwoArgumentDecorator do
-  use Decorator.Define, [two: 2]
+  use Decorator.Define, two: 2
 
   def two(one, two, body, _context) do
     quote do
       {unquote(one), unquote(two), unquote(body)}
     end
   end
-
 end
 
 defmodule DecoratorTest.Fixture.MyTwoFunctionTestModule do
@@ -36,6 +35,7 @@ end
 
 defmodule DecoratorTest.TwoArgument do
   use ExUnit.Case
+
   alias DecoratorTest.Fixture.{
     MyTwoFunctionTestModule,
     FunctionDocTestModule

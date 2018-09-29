@@ -1,5 +1,5 @@
 defmodule DecoratorTest.Fixture.OptionalArgsTestDecorator do
-  use Decorator.Define, [test: 0]
+  use Decorator.Define, test: 0
 
   def test(body, _context) do
     body
@@ -13,7 +13,6 @@ defmodule DecoratorTest.Fixture.OptionalArgsTestModule do
   def result(_aa, arg \\ nil) do
     {:ok, arg}
   end
-
 end
 
 defmodule DecoratorTest.DefaultArguments do
@@ -24,5 +23,4 @@ defmodule DecoratorTest.DefaultArguments do
     assert {:ok, nil} == OptionalArgsTestModule.result(1)
     assert {:ok, 1} == OptionalArgsTestModule.result(2, 1)
   end
-
 end
