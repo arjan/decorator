@@ -111,6 +111,29 @@ def print(level, body, context) do
 end
 ```
 
+### Decorating all functions in a module
+
+A shortcut to decorate all functions in a module is to use the `@decorate_all` attribute:
+
+```elixir
+defmodule MyApp.APIController
+  use MyBackend.LoggerDecorator
+
+  @decorate_all log_request()
+
+  def index(_conn, params) do
+    # ...
+  end
+
+  def detail(_conn, params) do
+    # ...
+  end
+```
+
+In this example, the `log_request()` decorator is applied to both
+`index/2` and `detail/2`.
+
+
 ### Decorator context
 
 Besides the function body AST, the decorator function also gets a

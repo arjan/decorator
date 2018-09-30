@@ -34,6 +34,7 @@ defmodule Decorator.Define do
         quote do
           import unquote(@decorator_module), only: unquote(imports)
 
+          Module.register_attribute(__MODULE__, :decorate_all, accumulate: true)
           Module.register_attribute(__MODULE__, :decorate, accumulate: true)
           Module.register_attribute(__MODULE__, :decorated, accumulate: true)
 
