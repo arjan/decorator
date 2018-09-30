@@ -1,0 +1,38 @@
+defmodule DecoratorTest.Fixture.MyDecorator do
+  use Decorator.Define, some_decorator: 0
+
+  def some_decorator(body, _context) do
+    {:ok, body}
+  end
+end
+
+defmodule DecoratorTest.Fixture.MyModule do
+  use DecoratorTest.Fixture.MyDecorator
+
+  @decorate_all some_decorator()
+
+  def square(a) do
+    a * a
+  end
+
+  def answer, do: 24
+
+  @value 123
+  def value123, do: @value
+
+  @value 666
+  def value666, do: @value
+end
+
+defmodule DecoratorTest.DecorateAll do
+  use ExUnit.Case
+  alias DecoratorTest.Fixture.MyModule
+
+  test "decorate_all" do
+    assert {:ok, 4} == MyModule.square(2)
+    assert {:ok, 16} == MyModule.square(4)
+    assert {:ok, 24} == MyModule.answer()
+    assert {:ok, 123} == MyModule.value123()
+    assert {:ok, 666} == MyModule.value666()
+  end
+end
