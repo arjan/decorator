@@ -8,9 +8,22 @@ defmodule Decorator.Decorate do
       Module.get_attribute(env.module, :decorate) ++
         Module.get_attribute(env.module, :decorate_all)
 
-    decorated = {kind, fun, args, guards, body, decorators}
+    attrs = extract_attributes(env.module, body)
+    decorated = {kind, fun, args, guards, body, decorators, attrs}
     Module.put_attribute(env.module, :decorated, decorated)
     Module.delete_attribute(env.module, :decorate)
+  end
+
+  defp extract_attributes(module, body) do
+    Macro.postwalk(body, %{}, fn
+      {:@, _, [{attr, _, nil}]} = n, attrs ->
+        attrs = Map.put(attrs, attr, Module.get_attribute(module, attr))
+        {n, attrs}
+
+      n, acc ->
+        {n, acc}
+    end)
+    |> elem(1)
   end
 
   defmacro before_compile(env) do
@@ -31,10 +44,10 @@ defmodule Decorator.Decorate do
   defp decorated_functions(all) do
     Enum.group_by(
       all,
-      fn {_kind, fun, args, _guard, _body, _decorators} ->
+      fn {_kind, fun, args, _guard, _body, _decorators, _attrs} ->
         {fun, Enum.count(args)}
       end,
-      fn {_kind, _fun, _args, _guard, _body, decorators} ->
+      fn {_kind, _fun, _args, _guard, _body, decorators, _attrs} ->
         decorators
       end
     )
@@ -47,7 +60,7 @@ defmodule Decorator.Decorate do
   # Remove all defs which are not decorated -- these doesn't need to be redefined.
   defp filter_undecorated(all, decorated_functions) do
     all
-    |> Enum.filter(fn {_kind, fun, args, _guard, _body, _decorators} ->
+    |> Enum.filter(fn {_kind, fun, args, _guard, _body, _decorators, _attrs} ->
       Map.has_key?(decorated_functions, {fun, Enum.count(args)})
     end)
   end
@@ -68,7 +81,7 @@ defmodule Decorator.Decorate do
 
   defp decorate(
          env,
-         {kind, fun, args, guard, body, decorators},
+         {kind, fun, args, guard, body, decorators, attrs},
          decorated_functions,
          {prev_fun, all}
        ) do
@@ -79,6 +92,12 @@ defmodule Decorator.Decorate do
           defoverridable [{unquote(fun), unquote(&1)}]
         end
       )
+
+    attrs =
+      attrs
+      |> Enum.map(fn {attr, value} ->
+        {:@, [], [{attr, [], [value]}]}
+      end)
 
     arity = Enum.count(args || [])
     context = %Context{name: fun, arity: arity, args: args, module: env.module}
@@ -116,9 +135,9 @@ defmodule Decorator.Decorate do
     arity = Enum.count(args)
 
     if {fun, arity} != prev_fun do
-      {{fun, arity}, [def_clause, override_clause | all]}
+      {{fun, arity}, [def_clause, override_clause] ++ attrs ++ all}
     else
-      {{fun, arity}, [def_clause | all]}
+      {{fun, arity}, [def_clause] ++ attrs ++ all}
     end
   end
 

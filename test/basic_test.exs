@@ -24,7 +24,7 @@ defmodule DecoratorTest.Fixture.MyModule do
   @value 666
   @decorate some_decorator()
   def value666 do
-    {:ok, 2 * (@value / 2)}
+    {:ok, trunc(2 * @value * 0.5)}
   end
 end
 
