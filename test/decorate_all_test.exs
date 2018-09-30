@@ -17,11 +17,9 @@ defmodule DecoratorTest.Fixture.MyModule do
 
   def answer, do: 24
 
-  @value 123
-  def value123, do: @value
+  def value123, do: 123
 
-  @value 666
-  def value666, do: @value
+  def value666, do: 666
 end
 
 defmodule DecoratorTest.DecorateAll do

@@ -4,7 +4,10 @@ defmodule Decorator.Decorate do
   end
 
   def on_definition(env, kind, fun, args, guards, body) do
-    decorators = Module.get_attribute(env.module, :decorate)
+    decorators =
+      Module.get_attribute(env.module, :decorate) ++
+        Module.get_attribute(env.module, :decorate_all)
+
     decorated = {kind, fun, args, guards, body, decorators}
     Module.put_attribute(env.module, :decorated, decorated)
     Module.delete_attribute(env.module, :decorate)
