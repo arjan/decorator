@@ -1,4 +1,4 @@
-defmodule DecoratorTest.Fixture.MyDecorator do
+defmodule DecoratorDecorateAllTest.Fixture.MyDecorator do
   use Decorator.Define, some_decorator: 0
 
   def some_decorator(body, _context) do
@@ -6,8 +6,8 @@ defmodule DecoratorTest.Fixture.MyDecorator do
   end
 end
 
-defmodule DecoratorTest.Fixture.MyModule do
-  use DecoratorTest.Fixture.MyDecorator
+defmodule DecoratorDecorateAllTest.Fixture.MyModule do
+  use DecoratorDecorateAllTest.Fixture.MyDecorator
 
   @decorate_all some_decorator()
 
@@ -22,9 +22,9 @@ defmodule DecoratorTest.Fixture.MyModule do
   def value666, do: 666
 end
 
-defmodule DecoratorTest.DecorateAll do
+defmodule DecoratorDecorateAllTest do
   use ExUnit.Case
-  alias DecoratorTest.Fixture.MyModule
+  alias DecoratorDecorateAllTest.Fixture.MyModule
 
   test "decorate_all" do
     assert {:ok, 4} == MyModule.square(2)
