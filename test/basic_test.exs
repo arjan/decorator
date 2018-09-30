@@ -18,10 +18,14 @@ defmodule DecoratorTest.Fixture.MyModule do
   def answer, do: 24
 
   @value 123
+  @decorate some_decorator()
   def value123, do: @value
 
   @value 666
-  def value666, do: @value
+  @decorate some_decorator()
+  def value666 do
+    {:ok, 2 * (@value / 2)}
+  end
 end
 
 defmodule DecoratorTest.Basic do
@@ -39,6 +43,6 @@ defmodule DecoratorTest.Basic do
 
   test "normal module attributes should still work" do
     assert 123 == MyModule.value123()
-    assert 666 == MyModule.value666()
+    assert {:ok, 666} == MyModule.value666()
   end
 end
