@@ -66,9 +66,11 @@ defmodule Decorator.Decorate do
     end)
   end
 
- defp reject_empty_clauses(all) do
-   Enum.reject(all, fn {_kind, _fun, _args, _guards, body, _decorators, _attrs} -> body == nil end)
- end
+  defp reject_empty_clauses(all) do
+    Enum.reject(all, fn {_kind, _fun, _args, _guards, body, _decorators, _attrs} ->
+      body == nil
+    end)
+  end
 
   defp implied_arities(args) do
     arity = Enum.count(args)
@@ -101,7 +103,7 @@ defmodule Decorator.Decorate do
     attrs =
       attrs
       |> Enum.map(fn {attr, value} ->
-        {:@, [], [{attr, [], [value]}]}
+        {:@, [], [{attr, [], [Macro.escape(value)]}]}
       end)
 
     arity = Enum.count(args || [])
