@@ -5,7 +5,7 @@ defmodule Decorator.Mixfile do
     [
       app: :decorator,
       version: File.read!("VERSION"),
-      elixir: "~> 1.3",
+      elixir: "~> 1.5",
       elixirc_options: [warnings_as_errors: true],
       description: description(),
       package: package(),

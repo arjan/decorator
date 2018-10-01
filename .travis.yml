@@ -1,8 +1,8 @@
 language: elixir
 matrix:
   include:
-    - name: "Elixir 1.3 / OTP 18"
-      elixir: 1.3
+    - name: "Elixir 1.5 / OTP 18"
+      elixir: 1.5
       otp_release: 18.3
     - name: "Elixir 1.6 / OTP 20"
       elixir: 1.6
