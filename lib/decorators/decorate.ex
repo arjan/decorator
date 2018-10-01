@@ -43,7 +43,7 @@ defmodule Decorator.Decorate do
   end
 
   defp reject_empty_clauses(all) do
-    Enum.reject(all, fn {_kind, _fun, _args, _guards, body, _decorators} -> body == nil end)
+    Enum.reject(all, fn {_kind, _fun, _args, _guards, body, _decorators, _attrs} -> body == nil end)
   end
 
   defp decorated_functions(all) do
