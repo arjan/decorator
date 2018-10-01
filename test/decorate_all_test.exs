@@ -20,6 +20,12 @@ defmodule DecoratorDecorateAllTest.Fixture.MyModule do
   def value123, do: 123
 
   def value666, do: 666
+
+
+  def empty_body(a)
+
+  def empty_body(10), do: 11
+  def empty_body(n), do: n+2
 end
 
 defmodule DecoratorDecorateAllTest do
@@ -32,5 +38,7 @@ defmodule DecoratorDecorateAllTest do
     assert {:ok, 24} == MyModule.answer()
     assert {:ok, 123} == MyModule.value123()
     assert {:ok, 666} == MyModule.value666()
+    assert {:ok, 11} == MyModule.empty_body(10)
+    assert {:ok, 8} == MyModule.empty_body(6)
   end
 end
