@@ -1,5 +1,5 @@
 defmodule DecoratorTest.Fixture.MultipleClausesTestDecorator do
-  use Decorator.Define, [test: 0]
+  use Decorator.Define, test: 0
 
   def test(body, _context) do
     {:ok, body}
@@ -19,10 +19,8 @@ defmodule DecoratorTest.Fixture.MultipleClausesTestModule do
   end
 
   def result(n) do
-    n*n
+    n * n
   end
-
-
 end
 
 defmodule DecoratorTest.MultipleClauses do
@@ -33,7 +31,5 @@ defmodule DecoratorTest.MultipleClauses do
     assert {:ok, 1} == MultipleClausesTestModule.result(1)
     assert {:ok, 2} == MultipleClausesTestModule.result(2)
     assert {:ok, 25} == MultipleClausesTestModule.result(5)
-
   end
-
 end

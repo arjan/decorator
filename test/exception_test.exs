@@ -1,11 +1,10 @@
 # two arguments
 defmodule DecoratorTest.Fixture.ExceptionDecorator do
-  use Decorator.Define, [test: 0]
+  use Decorator.Define, test: 0
 
   def test(body, _context) do
     {:ok, body}
   end
-
 end
 
 defmodule DecoratorTest.Fixture.ExceptionTestModule do
@@ -16,6 +15,7 @@ defmodule DecoratorTest.Fixture.ExceptionTestModule do
     if a == :throw do
       raise RuntimeError, "text"
     end
+
     a
   rescue
     _ in RuntimeError ->
