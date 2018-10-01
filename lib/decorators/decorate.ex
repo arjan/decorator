@@ -34,6 +34,7 @@ defmodule Decorator.Decorate do
 
     decorated
     |> filter_undecorated(decorated_functions)
+    |> reject_empty_clauses()
     |> Enum.reduce({nil, []}, fn d, acc ->
       decorate(env, d, decorated_functions, acc)
     end)
@@ -64,6 +65,10 @@ defmodule Decorator.Decorate do
       Map.has_key?(decorated_functions, {fun, Enum.count(args)})
     end)
   end
+
+ defp reject_empty_clauses(all) do
+   Enum.reject(all, fn {_kind, _fun, _args, _guards, body, _decorators, _attrs} -> body == nil end)
+ end
 
   defp implied_arities(args) do
     arity = Enum.count(args)
