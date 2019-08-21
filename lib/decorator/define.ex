@@ -36,12 +36,17 @@ defmodule Decorator.Define do
         quote do
           import unquote(@decorator_module), only: unquote(imports)
 
-          Module.register_attribute(__MODULE__, :decorate_all, accumulate: true)
-          Module.register_attribute(__MODULE__, :decorate, accumulate: true)
-          Module.register_attribute(__MODULE__, :decorated, accumulate: true)
+          if is_nil(Module.get_attribute(__MODULE__, :has_been_decorated)) do
+            Module.register_attribute(__MODULE__, :has_been_decorated, accumulate: false)
+            Module.put_attribute(__MODULE__, :has_been_decorated, true)
 
-          @on_definition {Decorator.Decorate, :on_definition}
-          @before_compile {Decorator.Decorate, :before_compile}
+            Module.register_attribute(__MODULE__, :decorate_all, accumulate: true)
+            Module.register_attribute(__MODULE__, :decorate, accumulate: true)
+            Module.register_attribute(__MODULE__, :decorated, accumulate: true)
+
+            @on_definition {Decorator.Decorate, :on_definition}
+            @before_compile {Decorator.Decorate, :before_compile}
+          end
         end
       end
     end
