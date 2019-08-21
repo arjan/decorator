@@ -1,5 +1,11 @@
 defmodule Decorator.Decorate do
+  @moduledoc false
+
   defmodule Context do
+    @moduledoc """
+    Struct with information about the function that is being decorated.
+    """
+
     defstruct name: nil, arity: nil, module: nil, args: nil
   end
 
