@@ -13,6 +13,7 @@ defmodule Decorator.Mixfile do
       homepage_url: "https://github.com/arjan/decorator",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
+      docs: docs(),
       deps: deps()
     ]
   end
@@ -34,7 +35,19 @@ defmodule Decorator.Mixfile do
     [applications: [:logger]]
   end
 
+  defp docs do
+    [
+      main: "readme",
+      formatter_opts: [gfm: true],
+      extras: [
+        "README.md"
+      ]
+    ]
+  end
+
   defp deps do
-    []
+    [
+      {:ex_doc, ">= 0.0.0", only: :dev}
+    ]
   end
 end

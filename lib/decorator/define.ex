@@ -1,4 +1,6 @@
 defmodule Decorator.Define do
+  @moduledoc false
+
   defmacro __using__(decorators) do
     decorator_module = __CALLER__.module
 
