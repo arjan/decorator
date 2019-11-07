@@ -30,7 +30,9 @@ Add `decorator` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:decorator, "~> 1.2"}]
+  [
+    {:decorator, "~> 1.2"}
+  ]
 end
 ```
 
