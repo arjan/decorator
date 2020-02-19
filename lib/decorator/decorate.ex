@@ -16,6 +16,7 @@ defmodule Decorator.Decorate do
 
     attrs = extract_attributes(env.module, body)
     decorated = {kind, fun, args, guards, body, decorators, attrs}
+
     Module.put_attribute(env.module, :decorated, decorated)
     Module.delete_attribute(env.module, :decorate)
   end
@@ -41,7 +42,7 @@ defmodule Decorator.Decorate do
     decorated
     |> filter_undecorated(decorated_functions)
     |> reject_empty_clauses()
-    |> Enum.reduce({nil, []}, fn d, acc ->
+    |> Enum.reduce({[], []}, fn d, acc ->
       decorate(env, d, decorated_functions, acc)
     end)
     |> elem(1)
@@ -96,7 +97,7 @@ defmodule Decorator.Decorate do
          env,
          {kind, fun, args, guard, body, decorators, attrs},
          decorated_functions,
-         {prev_fun, all}
+         {prev_funs, all}
        ) do
     override_clause =
       implied_arities(args)
@@ -147,10 +148,12 @@ defmodule Decorator.Decorate do
 
     arity = Enum.count(args)
 
-    if {fun, arity} != prev_fun do
-      {{fun, arity}, [def_clause, override_clause] ++ attrs ++ all}
+    fun_and_arity = {fun, arity}
+
+    if not Enum.member?(prev_funs, fun_and_arity) do
+      {[fun_and_arity | prev_funs], [def_clause, override_clause] ++ attrs ++ all}
     else
-      {{fun, arity}, [def_clause] ++ attrs ++ all}
+      {prev_funs, [def_clause] ++ attrs ++ all}
     end
   end
 
