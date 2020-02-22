@@ -6,7 +6,7 @@ defmodule Decorator.Mixfile do
       app: :decorator,
       version: File.read!("VERSION"),
       elixir: "~> 1.5",
-      elixirc_options: [warnings_as_errors: true],
+      elixirc_options: elixirrc_options(Mix.env()),
       description: description(),
       package: package(),
       source_url: "https://github.com/arjan/decorator",
@@ -33,6 +33,14 @@ defmodule Decorator.Mixfile do
 
   def application do
     [applications: [:logger]]
+  end
+
+  defp elixirrc_options(:test) do
+    []
+  end
+
+  defp elixirrc_options(_) do
+    [warnings_as_errors: true]
   end
 
   defp docs do

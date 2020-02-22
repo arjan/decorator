@@ -44,10 +44,23 @@ defmodule DecoratorDecorateAllTest.Fixture.MyModuleWithAttribute do
   def fun3(x), do: x + @custom_attr_map[:some_val]
 end
 
+defmodule DecoratorDecorateAllTest.Fixture.MyModuleWithSeparatedClauses do
+  use DecoratorDecorateAllTest.Fixture.MyDecorator
+
+  @decorate_all some_decorator()
+
+  def fun1(0), do: :zero
+
+  def fun2(x), do: x + 2
+
+  def fun1(x), do: x
+end
+
 defmodule DecoratorDecorateAllTest do
   use ExUnit.Case
   alias DecoratorDecorateAllTest.Fixture.MyModule
   alias DecoratorDecorateAllTest.Fixture.MyModuleWithAttribute
+  alias DecoratorDecorateAllTest.Fixture.MyModuleWithSeparatedClauses
 
   test "decorate_all" do
     assert {:ok, 4} == MyModule.square(2)
@@ -60,5 +73,8 @@ defmodule DecoratorDecorateAllTest do
     assert {:ok, 10} == MyModuleWithAttribute.fun1(8)
     assert {:ok, 20} == MyModuleWithAttribute.fun2(5)
     assert {:ok, 8} == MyModuleWithAttribute.fun3(5)
+    assert {:ok, :zero} == MyModuleWithSeparatedClauses.fun1(0)
+    assert {:ok, 4} == MyModuleWithSeparatedClauses.fun2(2)
+    assert {:ok, 2} == MyModuleWithSeparatedClauses.fun1(2)
   end
 end
