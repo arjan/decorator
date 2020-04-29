@@ -136,6 +136,32 @@ In this example, the `log_request()` decorator is applied to both
 `index/2` and `detail/2`.
 
 
+### Functions with multiple clauses
+
+If you have a function with multiple clauses, and only decorate one
+clause, you will notice that you get compiler warnings about unused
+variables and other things. For functions with multiple clauses the
+general advice is this: You should create an empty function head, and
+call the decorator on that head, like this:
+
+```elixir
+defmodule DecoratorFunctionHead do
+  use DecoratorFunctionHead.PrintDecorator
+
+  @decorate print()
+  def hello(first_name, last_name \\ nil)
+
+  def hello(:world, _last_name) do
+    :world
+  end
+
+  def hello(first_name, last_name) do
+    "Hello #{first_name} #{last_name}"
+  end
+end
+```
+
+
 ### Decorator context
 
 Besides the function body AST, the decorator function also gets a
