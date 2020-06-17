@@ -146,8 +146,6 @@ defmodule Decorator.Decorate do
           end
       end
 
-    arity = Enum.count(args)
-
     fun_and_arity = {fun, arity}
 
     if not Enum.member?(prev_funs, fun_and_arity) do
