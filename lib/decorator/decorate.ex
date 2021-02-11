@@ -167,7 +167,22 @@ defmodule Decorator.Decorate do
   defp apply_decorator(context, mfa, do: body, rescue: rescue_block) do
     [
       do: apply_decorator(context, mfa, body),
-      rescue: apply_decorator_to_rescue(context, mfa, rescue_block)
+      rescue: apply_decorator_to_wrapped_try(context, mfa, rescue_block)
+    ]
+  end
+
+  defp apply_decorator(context, mfa, do: body, rescue: rescue_block, catch: catch_block) do
+    [
+      do: apply_decorator(context, mfa, body),
+      rescue: apply_decorator_to_wrapped_try(context, mfa, rescue_block),
+      catch: apply_decorator_to_wrapped_try(context, mfa, catch_block)
+    ]
+  end
+
+  defp apply_decorator(context, mfa, do: body, catch: catch_block) do
+    [
+      do: apply_decorator(context, mfa, body),
+      catch: apply_decorator_to_wrapped_try(context, mfa, catch_block)
     ]
   end
 
@@ -183,8 +198,8 @@ defmodule Decorator.Decorate do
     raise ArgumentError, "Invalid decorator: #{inspect(decorator)}"
   end
 
-  defp apply_decorator_to_rescue(context, mfa, rescue_block) do
-    rescue_block
+  defp apply_decorator_to_wrapped_try(context, mfa, wrapped_block) do
+    wrapped_block
     |> Enum.map(fn {:->, meta, [match, body]} ->
       {:->, meta, [match, apply_decorator(context, mfa, body)]}
     end)
