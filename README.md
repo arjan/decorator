@@ -1,6 +1,6 @@
 # Elixir function decorators
 
-[![Build Status](https://travis-ci.org/arjan/decorator.svg?branch=master)](https://travis-ci.org/arjan/decorator)
+[![Build Status](https://github.com/arjan/decorator/workflows/badge.svg)](https://github.com/arjan/decorator)
 [![Hex pm](http://img.shields.io/hexpm/v/decorator.svg?style=flat)](https://hex.pm/packages/decorator)
 
 A function decorator is a "`@decorate`" annotation that is put just
