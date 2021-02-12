@@ -115,7 +115,9 @@ end
 
 ### Decorating all functions in a module
 
-A shortcut to decorate all functions in a module is to use the `@decorate_all` attribute:
+A shortcut to decorate all functions in a module is to use the `@decorate_all` attribute, as shown below. It is
+important to note that the `@decorate_all` attribute only
+affects the function clauses below its definition.
 
 ```elixir
 defmodule MyApp.APIController
