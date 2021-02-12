@@ -158,15 +158,11 @@ defmodule Decorator.Decorate do
   defp ensure_do([{:do, _} | _] = body), do: body
   defp ensure_do(body), do: [do: body]
 
-  defp apply_decorator(context, mfa, do: body) do
-    [do: apply_decorator(context, mfa, body)]
-  end
-
-  defp apply_decorator(context, mfa, do: body, rescue: rescue_block) do
-    [
-      do: apply_decorator(context, mfa, body),
-      rescue: apply_decorator_to_rescue(context, mfa, rescue_block)
-    ]
+  # a do-block will automatically be put in a `try do` by Elixir when one of the keywords
+  # `rescue`, `catch` or `after` is present. hence `try_clauses`.
+  defp apply_decorator(context, mfa, [{:do, body} | try_clauses]) do
+    [do: apply_decorator(context, mfa, body)] ++
+      apply_decorator_try_clauses(context, mfa, try_clauses)
   end
 
   defp apply_decorator(context, {module, fun, args}, body) do
@@ -181,8 +177,21 @@ defmodule Decorator.Decorate do
     raise ArgumentError, "Invalid decorator: #{inspect(decorator)}"
   end
 
-  defp apply_decorator_to_rescue(context, mfa, rescue_block) do
-    rescue_block
+  defp apply_decorator_try_clauses(_, _, []), do: []
+
+  defp apply_decorator_try_clauses(context, mfa, [{:after, after_block} | try_clauses]) do
+    [after: apply_decorator(context, mfa, after_block)] ++
+      apply_decorator_try_clauses(context, mfa, try_clauses)
+  end
+
+  defp apply_decorator_try_clauses(context, mfa, [{try_clause, try_match_block} | try_clauses])
+       when try_clause in [:rescue, :catch] do
+    [{try_clause, apply_decorator_to_try_clause_block(context, mfa, try_match_block)}] ++
+      apply_decorator_try_clauses(context, mfa, try_clauses)
+  end
+
+  defp apply_decorator_to_try_clause_block(context, mfa, try_match_block) do
+    try_match_block
     |> Enum.map(fn {:->, meta, [match, body]} ->
       {:->, meta, [match, apply_decorator(context, mfa, body)]}
     end)
