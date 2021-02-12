@@ -14,7 +14,6 @@ defmodule DecoratorTest.Fixture.LoggingDecorator do
   end
 end
 
-
 defmodule DecoratorTest.Fixture.TwoDecoratorsUsed do
   use DecoratorTest.Fixture.LoggingDecorator
   use DecoratorTest.Fixture.MonitoringDecorator

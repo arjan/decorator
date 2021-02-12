@@ -21,12 +21,10 @@ defmodule DecoratorDecorateAllTest.Fixture.MyModule do
 
   def value666, do: 666
 
-
   def empty_body(a)
 
   def empty_body(10), do: 11
-  def empty_body(n), do: n+2
-
+  def empty_body(n), do: n + 2
 end
 
 defmodule DecoratorDecorateAllTest.Fixture.MyModuleWithAttribute do
@@ -37,7 +35,7 @@ defmodule DecoratorDecorateAllTest.Fixture.MyModuleWithAttribute do
   @custom_attr 15
   @custom_attr_map %{some_val: 3, other_val: 10}
 
-  def fun1(x), do: x+2
+  def fun1(x), do: x + 2
 
   def fun2(x), do: x + @custom_attr
 
