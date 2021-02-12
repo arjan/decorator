@@ -66,12 +66,17 @@ end
 defmodule DecoratorTest.Fixture.DecoratedFunctionWithEmptyClause do
   use DecoratorTest.Fixture.FunctionResultDecorator
 
-   @decorate function_result(:ok)
+  @decorate function_result(:ok)
   def multiply(x, y \\ 1)
 
-  def multiply(1, y) do y end
-  def multiply(x, y) do x * y end
- end
+  def multiply(1, y) do
+    y
+  end
+
+  def multiply(x, y) do
+    x * y
+  end
+end
 
 # Tests itself
 defmodule DecoratorTest.FunctionDecorator do
@@ -102,10 +107,10 @@ defmodule DecoratorTest.FunctionDecorator do
     assert {:ok, 5} == DecoratedFunctionWithDifferentArities.testfun(5)
   end
 
- test "decorating a function with an empty clause" do
+  test "decorating a function with an empty clause" do
     assert {:ok, 11} == DecoratedFunctionWithEmptyClause.multiply(11)
-    assert {:ok, 24} == DecoratedFunctionWithEmptyClause.multiply(6,4)
-    assert {:ok, 5} == DecoratedFunctionWithEmptyClause.multiply(1,5)
+    assert {:ok, 24} == DecoratedFunctionWithEmptyClause.multiply(6, 4)
+    assert {:ok, 5} == DecoratedFunctionWithEmptyClause.multiply(1, 5)
   end
 
   test "should throw error when defining an unknown decorator" do
@@ -118,8 +123,12 @@ defmodule DecoratorTest.FunctionDecorator do
         end
       end
 
-    assert_raise CompileError, fn ->
+    try do
       Module.create(NonExistingDecoratorModule, definition, file: "test.ex")
+      flunk("Should have thrown an error")
+    rescue
+      CompileError -> :ok
+      ArgumentError -> :ok
     end
   end
 
@@ -150,7 +159,7 @@ defmodule DecoratorTest.FunctionDecorator do
   end
 
   test "should throw error when using decorator wrong arity" do
-    assert_raise CompileError, fn ->
+    try do
       defmodule InvalidDecoratorArityUseModule do
         use FunctionResultDecorator
 
@@ -158,6 +167,11 @@ defmodule DecoratorTest.FunctionDecorator do
         def foo do
         end
       end
+
+      flunk("Should have thrown an error")
+    rescue
+      CompileError -> :ok
+      ArgumentError -> :ok
     end
   end
 
