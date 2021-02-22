@@ -1,61 +1,60 @@
 defmodule Decorator.Mixfile do
   use Mix.Project
 
+  @source_url "https://github.com/arjan/decorator"
+  @version File.read!("VERSION")
+
   def project do
     [
       app: :decorator,
-      version: File.read!("VERSION"),
+      version: @version,
       elixir: "~> 1.5",
       elixirc_options: elixirrc_options(Mix.env()),
-      description: description(),
-      package: package(),
-      source_url: "https://github.com/arjan/decorator",
-      homepage_url: "https://github.com/arjan/decorator",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
+      deps: deps(),
       docs: docs(),
-      deps: deps()
+      package: package()
+    ]
+  end
+
+  def application do
+    [
+      extra_applications: [:logger]
+    ]
+  end
+
+  defp elixirrc_options(:test), do: []
+  defp elixirrc_options(_), do: [warnings_as_errors: true]
+
+  defp deps do
+    [
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
+    ]
+  end
+
+  defp docs do
+    [
+      extras: ["README.md"],
+      main: "readme",
+      formatter_opts: [gfm: true],
+      homepage_url: @source_url,
+      source_url: @source_url,
+      api_reference: false
+    ]
+  end
+
+  defp package do
+    [
+      description: description(),
+      files: ["lib", "mix.exs", "*.md", "LICENSE", "VERSION"],
+      maintainers: ["Arjan Scherpenisse"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => @source_url}
     ]
   end
 
   defp description do
     "Function decorators for Elixir"
-  end
-
-  defp package do
-    %{
-      files: ["lib", "mix.exs", "*.md", "LICENSE", "VERSION"],
-      maintainers: ["Arjan Scherpenisse"],
-      licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/arjan/decorator"}
-    }
-  end
-
-  def application do
-    [applications: [:logger]]
-  end
-
-  defp elixirrc_options(:test) do
-    []
-  end
-
-  defp elixirrc_options(_) do
-    [warnings_as_errors: true]
-  end
-
-  defp docs do
-    [
-      main: "readme",
-      formatter_opts: [gfm: true],
-      extras: [
-        "README.md"
-      ]
-    ]
-  end
-
-  defp deps do
-    [
-      {:ex_doc, ">= 0.0.0", only: :dev}
-    ]
   end
 end

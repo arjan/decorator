@@ -1,7 +1,11 @@
 # Elixir function decorators
 
 [![Build Status](https://github.com/arjan/decorator/workflows/test/badge.svg)](https://github.com/arjan/decorator)
-[![Hex pm](http://img.shields.io/hexpm/v/decorator.svg?style=flat)](https://hex.pm/packages/decorator)
+[![Module Version](https://img.shields.io/hexpm/v/decorator.svg)](https://hex.pm/packages/decorator)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/decorator/)
+[![Total Download](https://img.shields.io/hexpm/dt/decorator.svg)](https://hex.pm/packages/decorator)
+[![License](https://img.shields.io/hexpm/l/decorator.svg)](https://github.com/arjan/decorator/blob/master/LICENSE)
+[![Last Updated](https://img.shields.io/github/last-commit/arjan/decorator.svg)](https://github.com/arjan/decorator/commits/master)
 
 A function decorator is a "`@decorate`" annotation that is put just
 before a function definition.  It can be used to add extra
@@ -26,7 +30,7 @@ it's clear in the code that decorators are being used.
 
 ## Installation
 
-Add `decorator` to your list of dependencies in `mix.exs`:
+Add `:decorator` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -54,7 +58,8 @@ defmodule MyModule do
 end
 ```
 
-Now whenever you call `MyModule.square()`, you'll see the message: `Function called: square` in the console.
+Now whenever you call `MyModule.square()`, you'll see the message: `Function
+called: square` in the console.
 
 Defining the decorator is pretty easy. Create a module in which you
 *use* the `Decorator.Define` module, passing in the decorator name and
@@ -78,9 +83,9 @@ end
 ```
 
 The arguments to the decorator function (the `def print(...)`) are the
-function's body (the AST), as well as a `context` argument which holds
-information like the function's name, defining module, arity and the
-arguments AST.
+function's body (the abstract syntax tree (AST)), as well as a `context`
+argument which holds information like the function's name, defining module,
+arity and the arguments AST.
 
 
 ### Compile-time arguments
@@ -197,3 +202,10 @@ def is_authorized(body, %{args: [conn, _params]}) do
   end
 end
 ```
+
+## Copyright and License
+
+Copyright (c) 2016 Arjan Scherpenisse
+
+This library is MIT licensed. See the
+[LICENSE](https://github.com/arjan/decorator/blob/master/LICENSE) for details.
