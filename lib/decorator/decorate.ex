@@ -6,7 +6,7 @@ defmodule Decorator.Decorate do
     Struct with information about the function that is being decorated.
     """
 
-    defstruct name: nil, arity: nil, module: nil, args: nil
+    defstruct name: nil, arity: nil, module: nil, args: nil, kind: nil
   end
 
   def on_definition(env, kind, fun, args, guards, body) do
@@ -114,7 +114,7 @@ defmodule Decorator.Decorate do
       end)
 
     arity = Enum.count(args || [])
-    context = %Context{name: fun, arity: arity, args: args, module: env.module}
+    context = %Context{name: fun, arity: arity, args: args, module: env.module, kind: kind}
 
     applicable_decorators =
       case decorators do

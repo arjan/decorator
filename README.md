@@ -173,14 +173,14 @@ end
 
 Besides the function body AST, the decorator function also gets a
 *context* argument passed in. This context holds information about the
-function being decorated, namely its module, function name, arity, and
-arguments as a list of AST nodes.
+function being decorated, namely its module, function name, arity, function
+kind, and arguments as a list of AST nodes.
 
 The print decorator can print its function name like this:
 
 ```elixir
 def print(body, context) do
-  Logger.debug("Function #{context.name}/#{context.arity} called in module #{context.module}!")
+  Logger.debug("Function #{context.name}/#{context.arity} with kind #{context.kind} called in module #{context.module}!")
 end
 ```
 
