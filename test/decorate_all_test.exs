@@ -48,10 +48,9 @@ defmodule DecoratorDecorateAllTest.Fixture.MyModuleWithSeparatedClauses do
   @decorate_all some_decorator()
 
   def fun1(0), do: :zero
+  def fun1(x), do: x
 
   def fun2(x), do: x + 2
-
-  def fun1(x), do: x
 end
 
 defmodule DecoratorDecorateAllTest do
