@@ -8,7 +8,7 @@ defmodule Decorator.Mixfile do
     [
       app: :decorator,
       version: @version,
-      elixir: "~> 1.5",
+      elixir: "~> 1.11",
       elixirc_options: elixirrc_options(Mix.env()),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
