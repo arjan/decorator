@@ -1,24 +1,64 @@
-on: push
+name: test
 
-name:
-  test
+on:
+  push:
+  pull_request:
+    branches:
+      - master
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    runs-on: ubuntu-20.04
     env:
       MIX_ENV: test
     strategy:
       matrix:
-        otp: ['21.0', '23.0']
-        elixir: ['1.7', '1.11']
+        include:
+          - pair:
+              elixir: 1.11.4
+              otp: 22.3
+          - pair:
+              elixir: 1.15.7
+              otp: 26.1
+            lint: lint
     steps:
-      - uses: actions/checkout@v2
-      - uses: erlef/setup-elixir@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
         with:
-          otp-version: ${{matrix.otp}}
-          elixir-version: ${{matrix.elixir}}
-      - run: mix deps.get
-      - run: mix compile --warnings-as-errors
-      - run: mix test
+          otp-version: ${{matrix.pair.otp}}
+          elixir-version: ${{matrix.pair.elixir}}
+
+      - name: Restore deps cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: deps-${{ runner.os }}-${{ matrix.pair.otp }}-${{ matrix.pair.elixir }}-${{ hashFiles('**/mix.lock') }}-git-${{ github.sha }}
+          restore-keys: |
+            deps-${{ runner.os }}-${{ matrix.pair.otp }}-${{ matrix.pair.elixir }}-${{ hashFiles('**/mix.lock') }}
+            deps-${{ runner.os }}-${{ matrix.pair.otp }}-${{ matrix.pair.elixir }}
+
+      - name: Install package dependencies
+        run: mix deps.get
+
+      - name: Check code format
+        run: mix format --check-formatted
+        if: ${{ matrix.lint }}
+
+      - name: Check unused deps
+        run: mix deps.unlock --check-unused
+        if: ${{ matrix.lint }}
+
+      - name: Compile dependencies
+        run: mix deps.compile
+
+      - name: Compile app
+        run: mix compile --warnings-as-errors
+        if: ${{ matrix.lint }}
+
+      - name: Run test
+        run: mix test
