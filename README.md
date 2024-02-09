@@ -203,6 +203,56 @@ def is_authorized(body, %{args: [conn, _params]}) do
 end
 ```
 
+### Simple reflection for all decorated functions
+A "hidden" function `__decorated_functions__/0` is added to any module that decorates functions and returns a list of 
+all decorated functions within that module. 
+
+This can be useful for testing purposes since you don't have to assert the decorated behaviors of the decorated 
+functions.  So long as your decorator function is well tested, you can just assert the expected decorators are present
+for the given function.
+
+The function returns a map with the function name and arguments as the key and a list of tuples with the decorator.
+This permits multiple decorators to be asserted with a single function call so that adding new decorators will cause
+the assertion to fail.
+
+For example, given the following module:
+```elixir
+  defmodule NewModule do
+    use Decorator.Define, [new_decorator: 1, another_decorator: 2]
+
+    @decorate new_decorator("one")
+    def func(%StructOne{} = msg) do
+      msg
+    end
+
+    @decorate new_decorator("two")
+    @decorate another_decorator("a", "b")
+    @decorate new_decorator("b")
+    def func(%StructTwo{c: 2} = _msg) do
+      :ok
+    end
+  end
+```
+
+You can assert the decorated functions like so:
+```elixir
+  test "Module with decorated functions are returned by `__decorated_functions__()" do
+    assert %{
+             {:func, ["%StructOne{} = msg"]} => [
+               {DecoratorTest.Fixture.NewDecorator, :new_decorator, ["one"]}
+             ],
+             {:func, ["%StructTwo{c: 2} = _msg"]} => [
+               {DecoratorTest.Fixture.NewDecorator, :new_decorator, ["two"]},
+               {DecoratorTest.Fixture.AnotherDecorator, :another_decorator, ["a", "b"]},
+               {DecoratorTest.Fixture.NewDecorator, :new_decorator, ["b"]}
+             ]
+           } == NewModule.__decorated_functions__()
+  end
+```
+
+Obviously, any changes to the parameters of the decorated function will cause the simple assertion to fail, but that's
+intentional, as the decorator may be dependent on the parameters of the decorated function.
+
 ## Copyright and License
 
 Copyright (c) 2016 Arjan Scherpenisse

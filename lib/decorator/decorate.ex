@@ -9,6 +9,40 @@ defmodule Decorator.Decorate do
     defstruct name: nil, arity: nil, module: nil, args: nil, kind: nil
   end
 
+  defmacro add_decorated_functions(env) do
+    decorated = Module.get_attribute(env.module, :decorated_functions) |> Enum.reverse()
+    Module.delete_attribute(env.module, :decorated_functions)
+
+    funcs =
+      Enum.reduce(decorated, %{}, fn {func, params, decorators}, acc ->
+        Map.put(acc, {func, params}, decorators)
+      end)
+      |> Macro.escape()
+
+    quote do
+      @doc ~S"""
+      Returns a map of all decorated functions in the module.
+
+      For example, given the following module:
+          defmodule NewModule do
+            use Decorator.Define, [new_decorator: 1]
+
+            @decorate new_decorator("one")
+            def func(%StructOne{} = msg), do: msg
+          end
+
+      It will return:
+          iex> NewModule.__decorated_functions__()
+          %{
+            {:func, ["%StructOne{} = msg"]} => [
+              {DecoratorTest.Fixture.NewDecorator, :new_decorator, ["one"]}
+            ]
+          }
+      """
+      def __decorated_functions__(), do: unquote(funcs)
+    end
+  end
+
   def on_definition(env, kind, fun, args, guards, body) do
     decorators =
       Module.get_attribute(env.module, :decorate) ++
@@ -16,6 +50,12 @@ defmodule Decorator.Decorate do
 
     attrs = extract_attributes(env.module, body)
     decorated = {kind, fun, args, guards, body, decorators, attrs}
+
+    unless Enum.empty?(decorators) do
+      args = Enum.map(args, fn arg -> Macro.to_string(arg) end)
+      info = {fun, args, decorators |> Enum.reverse()}
+      Module.put_attribute(env.module, :decorated_functions, info)
+    end
 
     Module.put_attribute(env.module, :decorated, decorated)
     Module.delete_attribute(env.module, :decorate)
